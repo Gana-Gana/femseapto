@@ -1,5 +1,4 @@
 <?php
-
 require_once '../src/controllers/UsuarioController.php';
 require_once '../auth/verifyToken.php';
 require_once '../config/cors.php';
@@ -16,10 +15,9 @@ if ($decodedToken === null || !isset($decodedToken->userId)) {
 }
 
 $idUsuario = $decodedToken->userId;
-// Crear una instancia del controlador
+
 $controlador = new UsuarioController();
 
-// Verificar el método de solicitud HTTP
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_GET['changePassword']) && $_GET['changePassword'] === 'true') {
     $datos = json_decode(file_get_contents("php://input"), true);
     

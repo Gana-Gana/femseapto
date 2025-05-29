@@ -1,5 +1,5 @@
 <?php
-
+require_once '../config/cors.php';
 require_once '../src/controllers/MunicipioController.php';
 
 $controlador = new MunicipioController();

@@ -1,8 +1,10 @@
 <?php
+require_once '../config/cors.php';
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_FILES['file'])) {
         $file = $_FILES['file'];
-        $uploadDir = '../uploads/information'; // Directorio de subida
+        $uploadDir = '../uploads/information';
 
         if (!is_dir($uploadDir)) {
             mkdir($uploadDir, 0755, true);

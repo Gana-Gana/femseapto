@@ -1,4 +1,5 @@
 <?php
+require_once '../config/cors.php';
 header('Content-Type: application/json');
 $uploadDir = '../uploads/'; // Directorio de subida
 

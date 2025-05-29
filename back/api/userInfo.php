@@ -1,5 +1,4 @@
 <?php
-
 require_once '../vendor/autoload.php';
 require_once '../src/models/UsuarioModel.php';
 require_once '../auth/verifyToken.php';
@@ -14,7 +13,6 @@ function getUsuarioData() {
         $userData = verifyJWTToken($token, $key);
 
         if ($userData) {
-            // Obtener información de Usuario
             $usuario = Usuario::obtenerPorId($userData->userId);
 
             if ($usuario) {
@@ -60,7 +58,7 @@ function getUsuarioData() {
 if ($_SERVER['REQUEST_METHOD'] === 'GET') {
     getUsuarioData();
 } else {
-    http_response_code(405); // Método no permitido
+    http_response_code(405);
     $response = [
         'success' => false,
         'message' => 'Método no permitido'

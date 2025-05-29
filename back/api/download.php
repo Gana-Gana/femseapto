@@ -1,4 +1,6 @@
 <?php
+require_once '../config/cors.php';
+
 if (isset($_GET['file'])) {
     $file = basename($_GET['file']);
     $uploadDir = '../uploads/'; // Directorio de subida

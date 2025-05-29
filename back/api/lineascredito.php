@@ -1,5 +1,5 @@
 <?php
-
+require_once '../config/cors.php';
 require_once __DIR__ . '/../src/controllers/LineaCreditoController.php';
 
 $controlador = new LineaCreditoController();

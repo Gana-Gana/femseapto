@@ -14,11 +14,14 @@ import { InactivityService } from './services/inactivity.service';
 export class AppComponent {
   title = 'front';
 
-  private router = inject(Router);
-  private inactivityService: InactivityService = inject(InactivityService);
-
-  constructor() {
-    this.inactivityService.startMonitoring();
+  constructor(
+    private router: Router,
+    private inactivityService: InactivityService
+  ) {
+    // console.log("%c App component initialized", "color: green; font-size: 16px; font-weight: bold");
+    // console.log("%c Timeout value: " + this.inactivityService.timeoutInMs + " ms", "color: blue; font-size: 14px");
+    
+    this.inactivityService.startMonitoring();    
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe(() => {

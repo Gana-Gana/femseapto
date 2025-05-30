@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { InactivityService } from './services/inactivity.service';
 
 @Component({
   selector: 'app-root',
@@ -14,6 +15,7 @@ export class AppComponent {
   title = 'front';
 
   private router = inject(Router);
+  private inactivityService = inject(InactivityService);
 
   constructor() {
     this.router.events.pipe(

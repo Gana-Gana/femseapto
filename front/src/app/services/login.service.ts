@@ -48,6 +48,10 @@ export class LoginService {
   }
 
   logout() {
-    return this.http.post(`${this.authUrl}/auth/logout.php`, { });
+    return this.http.post(
+      `${this.authUrl}/auth/logout.php`,
+      { },
+      { withCredentials: true }
+    );
   }
 }

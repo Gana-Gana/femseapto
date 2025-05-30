@@ -15,9 +15,10 @@ export class AppComponent {
   title = 'front';
 
   private router = inject(Router);
-  private inactivityService = inject(InactivityService);
+  private inactivityService: InactivityService = inject(InactivityService);
 
   constructor() {
+    this.inactivityService.startMonitoring();
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe(() => {

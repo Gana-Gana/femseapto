@@ -79,7 +79,7 @@
           <td>{{ creditRequest.tasaInteres }}</td>
           <td>{{ creditRequest.fechaSolicitud | date : "dd/MM/yyyy" }}</td>
           <td>
-            <app-generate-credit-request [userId]="creditRequest.idUsuario"
+            <app-generate-credit-request [userId]="creditRequest.id_usuario"
               [idSolicitudCredito]="creditRequest.id"></app-generate-credit-request>
           </td>
         </tr>

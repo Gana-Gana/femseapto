@@ -72,38 +72,13 @@ export class CreditRequestsComponent implements OnInit {
     this.loading = true;
     this.requestCreditService.getAll({ page, size, search, date }).subscribe({
       next: response => {
-        const requests = response.data;
-        if (requests.length === 0) {
-          this.creditRequests = [];
-          this.totalRecords = 0;
-          this.loading = false;
-          return;
-        }
-
-        const userObservables = requests.map((request: any) => this.userService.getById(request.idUsuario));
-        const creditLineObservables = requests.map((request: any) => this.creditLineService.obtenerLineaCreditoPorId(request.idLineaCredito));
-        const observables = [...userObservables, ...creditLineObservables];
-
-        forkJoin(observables).subscribe((responses: any[]) => {
-          const userArray = responses.slice(0, requests.length) as User[];
-          const creditLineArray = responses.slice(requests.length) as any[];
-          
-          this.creditRequests = requests.map((request: any, index: number) => {
-            const user = userArray[index];
-            const creditLine = creditLineArray[index];
-            return {
-              ...request,
-              numeroDocumento: user?.numeroDocumento || '',
-              nombreAsociado: `${user.primerNombre || ''} ${user.segundoNombre || ''} ${user.primerApellido || ''} ${user.segundoApellido || ''}`.trim(),
-              montoSolicitado: this.formatNumber(request.montoSolicitado),
-              valorCuotaQuincenal: this.formatNumber(request.valorCuotaQuincenal),
-              nombreLineaCredito: creditLine?.nombre || '',
-            };
-          });
-
-          this.totalRecords = response.total;
-          this.loading = false;
-        });
+        this.creditRequests = response.data.map((request: any) => ({
+          ...request,
+          montoSolicitado: this.formatNumber(request.montoSolicitado),
+          valorCuotaQuincenal: this.formatNumber(request.valorCuotaQuincenal),
+        }));
+        this.totalRecords = response.total;
+        this.loading = false;
       },
       error: err => {
         console.error('Error al cargar solicitudes de crédito', err);

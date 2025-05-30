@@ -220,19 +220,22 @@ class SolicitudCredito {
         $solicitudes = [];
     
         while ($row = $result->fetch_assoc()) {
-            $solicitudes[] = new SolicitudCredito(
-                $row['id'],
-                $row['id_usuario'],
-                $row['monto_solicitado'],
-                $row['plazo_quincenal'],
-                $row['valor_cuota_quincenal'],
-                $row['id_linea_credito'],
-                $row['reestructurado'],
-                $row['periocidad_pago'],
-                $row['tasa_interes'],
-                $row['ruta_documento'],
-                $row['fecha_solicitud']
-            );
+            $solicitudes[] = [
+                'id' => $row['id'],
+                'id_usuario' => $row['id_usuario'],
+                'montoSolicitado' => $row['monto_solicitado'],
+                'plazoQuincenal' => $row['plazo_quincenal'],
+                'valorCuotaQuincenal' => $row['valor_cuota_quincenal'],
+                'idLineaCredito' => $row['id_linea_credito'],
+                'reestructurado' => $row['reestructurado'],
+                'periocidadPago' => $row['periocidad_pago'],
+                'tasaInteres' => $row['tasa_interes'],
+                'rutaDocumento' => $row['ruta_documento'],
+                'fechaSolicitud' => $row['fecha_solicitud'],
+                'numeroDocumento' => $row['numero_documento'],
+                'nombreAsociado' => trim("{$row['primer_nombre']} {$row['segundo_nombre']} {$row['primer_apellido']} {$row['segundo_apellido']}"),
+                'nombreLineaCredito' => $row['nombre']
+            ];
         }
     
         $countStmt = $db->prepare($finalCountQuery);

@@ -51,7 +51,9 @@ export class LoginComponent {
               this.router.navigate(['/auth/admin']);
             } else if (rol === 3) {
               this.router.navigate(['/auth/executive']);
-            } else {
+            } else if (rol === 4) {
+              this.router.navigate(['/auth/social-oversight']);
+            }else {
               this.router.navigate(['/auth/user']);
             }
           }

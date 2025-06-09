@@ -33,6 +33,16 @@ import { ButtonModule } from 'primeng/button';
 export class AllowanceRequestsComponent implements OnInit {
 @ViewChild('dt2') dt2!: Table;
 
+userRole: number = 4;
+
+  ngOnInit(): void {
+    const role = localStorage.getItem('userRole');
+    if (role) {
+      this.userRole = parseInt(role, 10);
+    }
+    console.log('userRole:', this.userRole);
+    this.loadAllowanceRequests();
+  }
   allowanceRequests: any[] = [];
 
   searchControl: FormControl;
@@ -56,11 +66,7 @@ export class AllowanceRequestsComponent implements OnInit {
     this.searchControl = new FormControl('');
     this.dateControl = new FormControl('');
   }
-
-  ngOnInit(): void {
-    this.loadAllowanceRequests();
-  }
-
+  
   onFilterGlobal(event: Event) {
     const target = event.target as HTMLInputElement;
     if (target) {
@@ -73,15 +79,15 @@ export class AllowanceRequestsComponent implements OnInit {
     this.requestAllowanceService.getAll({ page, size, search, date }).subscribe({
       next: response => {
         this.allowanceRequests = response.data.map((request: any) => ({
-          ...request,
-          montoSolicitado: this.formatNumber(request.montoSolicitado), //EYYYYY ESTO TOCA CAMBIARLO
-          valorCuotaQuincenal: this.formatNumber(request.valorCuotaQuincenal), //EYYYYY ESTO TOCA CAMBIARLO TAMBIENNNNNNNNNNNNNNNNN
+          ...request
+          //montoSolicitado: this.formatNumber(request.montoSolicitado), //EYYYYY ESTO TOCA CAMBIARLO
+          //valorCuotaQuincenal: this.formatNumber(request.valorCuotaQuincenal), //EYYYYY ESTO TOCA CAMBIARLO TAMBIENNNNNNNNNNNNNNNNN
         }));
         this.totalRecords = response.total;
         this.loading = false;
       },
       error: err => {
-        console.error('Error al cargar solicitudes de crédito', err);
+        console.error('Error al cargar solicitudes de auxilios', err);
         this.loading = false;
       }
     });

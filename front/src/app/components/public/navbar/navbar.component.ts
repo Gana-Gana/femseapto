@@ -74,6 +74,8 @@ export class NavbarComponent implements OnInit, OnDestroy {
       this.router.navigate(['/auth/admin']);
     } else if (role === 3) {
       this.router.navigate(['/auth/executive']);
+    } else if (role === 4) {
+      this.router.navigate(['/auth/social-oversight']);
     } else {
       this.router.navigate(['/auth/user']);
     }

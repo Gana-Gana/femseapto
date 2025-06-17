@@ -3,46 +3,46 @@ require_once __DIR__ . '/../../config/config.php';
 
 class SolicitudAuxilio{
     public $id;
-    public $id_usuario;
-    public $tipoAuxilio;
+    public $idUsuario;
+    public $idTipoAuxilio;
     public $descripcion;
     public $fechaSolicitud;
     public $estado;
     public $observaciones;
-    public $adjuntos_auxilio = [];
+    public $adjuntosAuxilio = [];
 
 
-    public function __construct($id = null, $id_usuario =null, $tipoAuxilio = null, $descripcion = null, $fechaSolicitud = null, $estado = null, $observaciones = null, $adjuntos_auxilio = []) {
+    public function __construct($id = null, $idUsuario = null, $idTipoAuxilio = null, $descripcion = null, $fechaSolicitud = null, $estado = null, $observaciones = null, $adjuntosAuxilio = []) {
         
         $this->id = $id;
-        $this->id_usuario = $id_usuario;
-        $this->tipoAuxilio = $tipoAuxilio;
+        $this->idUsuario = $idUsuario;
+        $this->idTipoAuxilio = $idTipoAuxilio;
         $this->descripcion = $descripcion;
         $this->fechaSolicitud = $fechaSolicitud;
         $this->estado = $estado;
         $this->observaciones = $observaciones;
-        $this->adjuntos_auxilio = $adjuntos_auxilio;
+        $this->adjuntosAuxilio = $adjuntosAuxilio;
     }
 
      public function guardar() {
         $db = getDB();
         if ($this->id === null) {
-            $query = $db->prepare("INSERT INTO solicitudes_auxilios (id_usuario, id_tipo_auxilio, descripcion, estado, observaciones) VALUES (?, ?, ?)");
-            $query->bind_param("iis", $this->id_usuario, $this->tipoAuxilio, $this->descripcion, $this->estado, $this->observaciones);
+            $query = $db->prepare("INSERT INTO solicitudes_auxilios (id_usuario, id_tipo_auxilio, descripcion) VALUES (?, ?, ?)");
+            $query->bind_param("iis", $this->idUsuario, $this->idTipoAuxilio, $this->descripcion);
             $query->execute();
             $this->id = $query->insert_id;
             $query->close();
             
         } else {
-            $query = $db->prepare("UPDATE solicitudes_auxilios SET id_usuario, id_tipo_auxilio = ?, descripcion = ?, fecha_solicitud = ?, estado = ?, observaciones = ? WHERE id = ?");
-            $query->bind_param("iissi",$this->id_usuario,  $this->tipoAuxilio, $this->descripcion, $this->fechaSolicitud, $this->estado, $this->observaciones, $this->id);
+            $query = $db->prepare("UPDATE solicitudes_auxilios SET id_usuario = ?, id_tipo_auxilio = ?, descripcion = ?, fecha_solicitud = ? WHERE id = ?");
+            $query->bind_param("iissi",$this->idUsuario,  $this->idTipoAuxilio, $this->descripcion, $this->fechaSolicitud, $this->id);
             $query->execute();
             $query->close();
         }
 
-        if (!empty($this->adjuntos_auxilio)) {
+        if (!empty($this->adjuntosAuxilio)) {
         $insertAdjunto = $db->prepare("INSERT INTO adjuntos_auxilios (id_solicitud, ruta_archivo) VALUES (?, ?)");
-        foreach ($this->adjuntos_auxilio as $ruta) {
+        foreach ($this->adjuntosAuxilio as $ruta) {
             $insertAdjunto->bind_param("is", $this->id, $ruta);
             $insertAdjunto->execute();
         }
@@ -53,58 +53,89 @@ class SolicitudAuxilio{
     }
 
 public static function obtenerPorId($id) {
-        $db = getDB();
-        $query = $db->prepare(
-            "SELECT
-                id,
-                id_usuario,
-                id_tipo_auxilio,
-                descripcion,
-                fecha_solicitud,
+    $db = getDB();
+    $query = $db->prepare(
+        "SELECT
+            id,
+            id_usuario,
+            id_tipo_auxilio,
+            descripcion,
+            fecha_solicitud,
                 estado,
                 observaciones
-            FROM solicitudes_auxilios
-            WHERE id = ?");
-        $query->bind_param("i", $id);
-        $query->execute();
-        $query->bind_result($id, $idUsuario, $tipoAuxilio, $descripcion, $fechaSolicitud, $estado, $observaciones);
-        $solicitud = null;
-        if ($query->fetch()) {
-            $solicitud = new SolicitudAuxilio($id, $idUsuario, $tipoAuxilio, $descripcion, $fechaSolicitud, $estado, $observaciones);
-        }
+        FROM solicitudes_auxilios
+        WHERE id = ?");
+    $query->bind_param("i", $id);
+    $query->execute();
+    $query->bind_result($id, $idUsuario, $tipoAuxilio, $descripcion, $fechaSolicitud, $estado, $observaciones);
+    $solicitud = null;
+    if ($query->fetch()) {
         $query->close();
-        $db->close();
-        return $solicitud;
+
+       
+        $adjuntosQuery = $db->prepare("SELECT ruta_archivo FROM adjuntos_auxilios WHERE id_solicitud = ?");
+        $adjuntosQuery->bind_param("i", $id);
+        $adjuntosQuery->execute();
+        $adjuntosResult = $adjuntosQuery->get_result();
+        $adjuntos = [];
+        while ($row = $adjuntosResult->fetch_assoc()) {
+            $adjuntos[] = $row['ruta_archivo'];
+        }
+        $adjuntosQuery->close();
+
+        $solicitud = new SolicitudAuxilio($id, $idUsuario, $tipoAuxilio, $descripcion, $fechaSolicitud, $estado, $observaciones, $adjuntos);
+    } else {
+        $query->close();
     }
+
+    $db->close();
+    return $solicitud;
+}
+
 
     public static function obtenerPorIdUsuario($idUsuario) {
-        $db = getDB();
-        $query = $db->prepare(
-            "SELECT
-                id,
-                id_usuario,
-                id_tipo_auxilio,
-                descripcion,
-                CONVERT_TZ(fecha_solicitud, '+00:00', '-05:00') AS fecha_solicitud,
+    $db = getDB();
+    $query = $db->prepare(
+        "SELECT
+            id,
+            id_usuario,
+            id_tipo_auxilio,
+            descripcion,
+            CONVERT_TZ(fecha_solicitud, '+00:00', '-05:00') AS fecha_solicitud,
                 estado,
                 observaciones
-            FROM solicitudes_auxilios
-            WHERE id_usuario = ?");
-        $query->bind_param("i", $idUsuario);
-        $query->execute();
-        $query->bind_result($id, $idUsuario, $tipoAuxilio, $descripcion, $fechaSolicitud, $estado, $observaciones);
-        
-        $solCred = [];
+        FROM solicitudes_auxilios
+        WHERE id_usuario = ?"
+    );
+    $query->bind_param("i", $idUsuario);
+    $query->execute();
+    $query->bind_result($id, $idUsuarioBind, $tipoAuxilio, $descripcion, $fechaSolicitud, $estado, $observaciones);
+    
+    $solAux = [];
 
-        while ($query->fetch()) {
-            $solCred[] = new SolicitudAuxilio($id, $idUsuario, $tipoAuxilio, $descripcion, $fechaSolicitud, $estado, $observaciones);
+    while ($query->fetch()) {
+       
+        $adjuntosQuery = $db->prepare("SELECT ruta_archivo FROM adjuntos_auxilios WHERE id_solicitud = ?");
+        $adjuntosQuery->bind_param("i", $id);
+        $adjuntosQuery->execute();
+        $adjuntosResult = $adjuntosQuery->get_result();
+
+        $adjuntos = [];
+        while ($row = $adjuntosResult->fetch_assoc()) {
+            $adjuntos[] = $row['ruta_archivo'];
         }
+        $adjuntosQuery->close();
+
         
-        $query->close();
-        $db->close();
-        
-        return $solCred;
+        $solAux[] = new SolicitudAuxilio($id, $idUsuarioBind, $tipoAuxilio, $descripcion, $fechaSolicitud, $estado, $observaciones, $adjuntos);
     }
+
+    $query->close();
+    $db->close();
+
+    return $solAux;
+}
+
 
     public static function obtenerTodos() {
         $db = getDB();
@@ -287,7 +318,7 @@ public static function obtenerPorId($id) {
     
         $solicitudes = [];
         while ($row = $result->fetch_assoc()) {
-            $solicitudes[] = new SolicitudCredito(
+            $solicitudes[] = new SolicitudAuxilio(
                 $row['id'],
                 $row['id_usuario'],
                 $row['id_tipo_auxilio'],

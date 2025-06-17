@@ -5,7 +5,7 @@ require_once __DIR__ . '/../models/SolicitudAuxilioModel.php';
 class SolicitudAuxilioController {
 
     /**
-     * Crea una nueva solicitud de crédito.
+     * Crea una nueva solicitud de Auxilio.
      * @param array $datos Datos de la solicitud de crédito a crear.
      * @return int|null ID de la solicitud de crédito creada.
      */
@@ -15,10 +15,9 @@ class SolicitudAuxilioController {
             $datos['idUsuario'],
             $datos['tipoAuxilio'],
             $datos['descripcion'],
-            $datos['adjuntos_auxilio'] ?? null,
-            $datos['fechaSolicitud'] ?? null,
-            $datos['estado'],
-            $datos['observaciones']
+            date('Y-m-d'),
+            $datos['adjuntos_auxilio'] ?? []
+
         );
 
 

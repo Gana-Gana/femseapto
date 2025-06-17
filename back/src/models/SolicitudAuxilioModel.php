@@ -4,34 +4,38 @@ require_once __DIR__ . '/../../config/config.php';
 class SolicitudAuxilio{
     public $id;
     public $id_usuario;
-    public $id_tipo_auxilio;
+    public $tipoAuxilio;
     public $descripcion;
-    public $fecha_solicitud;
+    public $fechaSolicitud;
+    public $estado;
+    public $observaciones;
     public $adjuntos_auxilio = [];
 
 
-    public function __construct($id = null, $id_usuario =null, $id_tipo_auxilio = null, $descripcion = null, $fecha_solicitud = null, $adjuntos_auxilio = []) {
+    public function __construct($id = null, $id_usuario =null, $tipoAuxilio = null, $descripcion = null, $fechaSolicitud = null, $estado = null, $observaciones = null, $adjuntos_auxilio = []) {
         
         $this->id = $id;
         $this->id_usuario = $id_usuario;
-        $this->id_tipo_auxilio = $id_tipo_auxilio;
+        $this->tipoAuxilio = $tipoAuxilio;
         $this->descripcion = $descripcion;
-        $this->fecha_solicitud = $fecha_solicitud;
+        $this->fechaSolicitud = $fechaSolicitud;
+        $this->estado = $estado;
+        $this->observaciones = $observaciones;
         $this->adjuntos_auxilio = $adjuntos_auxilio;
     }
 
      public function guardar() {
         $db = getDB();
         if ($this->id === null) {
-            $query = $db->prepare("INSERT INTO solicitudes_auxilio (id_usuario, id_tipo_auxilio, descripcion) VALUES (?, ?, ?)");
-            $query->bind_param("iis", $this->id_usuario, $this->id_tipo_auxilio, $this->descripcion);
+            $query = $db->prepare("INSERT INTO solicitudes_auxilios (id_usuario, id_tipo_auxilio, descripcion, estado, observaciones) VALUES (?, ?, ?)");
+            $query->bind_param("iis", $this->id_usuario, $this->tipoAuxilio, $this->descripcion, $this->estado, $this->observaciones);
             $query->execute();
             $this->id = $query->insert_id;
             $query->close();
             
         } else {
-            $query = $db->prepare("UPDATE solicitudes_auxilio SET id_usuario, id_tipo_auxilio = ?, descripcion = ?, fecha_solicitud = ? WHERE id = ?");
-            $query->bind_param("iissi",$this->id_usuario,  $this->id_tipo_auxilio, $this->descripcion, $this->fecha_solicitud, $this->id);
+            $query = $db->prepare("UPDATE solicitudes_auxilios SET id_usuario, id_tipo_auxilio = ?, descripcion = ?, fecha_solicitud = ?, estado = ?, observaciones = ? WHERE id = ?");
+            $query->bind_param("iissi",$this->id_usuario,  $this->tipoAuxilio, $this->descripcion, $this->fechaSolicitud, $this->estado, $this->observaciones, $this->id);
             $query->execute();
             $query->close();
         }
@@ -56,15 +60,17 @@ public static function obtenerPorId($id) {
                 id_usuario,
                 id_tipo_auxilio,
                 descripcion,
-                fecha_solicitud
-            FROM solicitudes_auxilio
+                fecha_solicitud,
+                estado,
+                observaciones
+            FROM solicitudes_auxilios
             WHERE id = ?");
         $query->bind_param("i", $id);
         $query->execute();
-        $query->bind_result($id, $idUsuario, $id_tipo_auxilio, $descripcion, $fechaSolicitud);
+        $query->bind_result($id, $idUsuario, $tipoAuxilio, $descripcion, $fechaSolicitud, $estado, $observaciones);
         $solicitud = null;
         if ($query->fetch()) {
-            $solicitud = new SolicitudAuxilio($id, $idUsuario, $id_tipo_auxilio, $descripcion, $fechaSolicitud);
+            $solicitud = new SolicitudAuxilio($id, $idUsuario, $tipoAuxilio, $descripcion, $fechaSolicitud, $estado, $observaciones);
         }
         $query->close();
         $db->close();
@@ -79,17 +85,19 @@ public static function obtenerPorId($id) {
                 id_usuario,
                 id_tipo_auxilio,
                 descripcion,
-                CONVERT_TZ(fecha_solicitud, '+00:00', '-05:00') AS fecha_solicitud 
-            FROM solicitudes_auxilio
+                CONVERT_TZ(fecha_solicitud, '+00:00', '-05:00') AS fecha_solicitud,
+                estado,
+                observaciones
+            FROM solicitudes_auxilios
             WHERE id_usuario = ?");
         $query->bind_param("i", $idUsuario);
         $query->execute();
-        $query->bind_result($id, $idUsuario, $id_tipo_auxilio, $descripcion, $fechaSolicitud);
+        $query->bind_result($id, $idUsuario, $tipoAuxilio, $descripcion, $fechaSolicitud, $estado, $observaciones);
         
         $solCred = [];
 
         while ($query->fetch()) {
-            $solCred[] = new SolicitudAuxilio($id, $idUsuario, $id_tipo_auxilio, $descripcion, $fechaSolicitud);
+            $solCred[] = new SolicitudAuxilio($id, $idUsuario, $tipoAuxilio, $descripcion, $fechaSolicitud, $estado, $observaciones);
         }
         
         $query->close();
@@ -105,12 +113,14 @@ public static function obtenerPorId($id) {
                     id_usuario,
                     id_tipo_auxilio,
                     descripcion,
-                    CONVERT_TZ(fecha_solicitud, '+00:00', '-05:00') AS fecha_solicitud
-                FROM solicitudes_auxilio";
+                    CONVERT_TZ(fecha_solicitud, '+00:00', '-05:00') AS fecha_solicitud,
+                    estado,
+                    observaciones
+                FROM solicitudes_auxilios";
         $result = $db->query($query);
         $solicitudes = [];
         while ($row = $result->fetch_assoc()) {
-            $solicitudes[] = new SolicitudAuxilio($row['id'], $row['id_usuario'], $row['id_tipo_auxilio'], $row['descripcion'], $row['fecha_solicitud']);
+            $solicitudes[] = new SolicitudAuxilio($row['id'], $row['id_usuario'], $row['id_tipo_auxilio'], $row['descripcion'], $row['fecha_solicitud'], $row['estado'], $row['observaciones']);
         }
         $db->close();
         return $solicitudes;
@@ -121,9 +131,9 @@ public static function obtenerPorId($id) {
         $offset = ($page - 1) * $size;
     
         $baseQuery = "
-        FROM solicitudes_auxilio sa
+        FROM solicitudes_auxilios sa
         INNER JOIN usuarios u ON sa.id_usuario = u.id
-        INNER JOIN tipos_auxilio ta ON sa.id_tipo_auxilio = ta.id
+        INNER JOIN tipos_auxilios ta ON sa.id_tipo_auxilio = ta.id
     ";
     
         $selectQuery = "
@@ -133,6 +143,8 @@ public static function obtenerPorId($id) {
             sa.id_tipo_auxilio,
             sa.descripcion,
             CONVERT_TZ(sa.fecha_solicitud, '+00:00', '-05:00') AS fecha_solicitud,
+            sa.estado,
+            sa.observaciones,
             u.primer_nombre,
             u.segundo_nombre,
             u.primer_apellido,
@@ -141,7 +153,7 @@ public static function obtenerPorId($id) {
             ta.nombre AS nombre_tipo_auxilio
     ";
     
-        $countQuery = "SELECT COUNT(*) AS total";
+    $countQuery = "SELECT COUNT(*) AS total";
 
     $whereConditions = [];
     $params = [];
@@ -205,6 +217,8 @@ public static function obtenerPorId($id) {
             'id_tipo_auxilio' => $row['id_tipo_auxilio'],
             'descripcion' => $row['descripcion'],
             'fechaSolicitud' => $row['fecha_solicitud'],
+            'estado' => $row['estado'],
+            'observaciones' => $row['observaciones'],
             'numeroDocumento' => $row['numero_documento'],
             'nombreAsociado' => trim("{$row['primer_nombre']} {$row['segundo_nombre']} {$row['primer_apellido']} {$row['segundo_apellido']}"),
             'nombreTipoAuxilio' => $row['nombre_tipo_auxilio']
@@ -260,8 +274,10 @@ public static function obtenerPorId($id) {
                 id_usuario,
                 id_tipo_auxilio,
                 descripcion,
-                CONVERT_TZ(fecha_solicitud, '+00:00', '-05:00') AS fecha_solicitud
-            FROM solicitudes_auxilio
+                CONVERT_TZ(fecha_solicitud, '+00:00', '-05:00') AS fecha_solicitud,
+                estado,
+                observaciones
+            FROM solicitudes_auxilios
             WHERE fecha_solicitud
             BETWEEN ?
             AND ?");
@@ -276,7 +292,9 @@ public static function obtenerPorId($id) {
                 $row['id_usuario'],
                 $row['id_tipo_auxilio'],
                 $row['descripcion'],
-                $row['fecha_solicitud']
+                $row['fecha_solicitud'],
+                $row['estado'],
+                $row['observaciones']
             );
         }
         error_log("Número de solicitudes encontradas: " . count($solicitudes));

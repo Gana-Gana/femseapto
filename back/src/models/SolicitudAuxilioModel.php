@@ -34,8 +34,8 @@ class SolicitudAuxilio{
             $query->close();
             
         } else {
-            $query = $db->prepare("UPDATE solicitudes_auxilios SET id_usuario = ?, id_tipo_auxilio = ?, descripcion = ?, fecha_solicitud = ? WHERE id = ?");
-            $query->bind_param("iissi",$this->idUsuario,  $this->idTipoAuxilio, $this->descripcion, $this->fechaSolicitud, $this->id);
+            $query = $db->prepare("UPDATE solicitudes_auxilios SET id_tipo_auxilio = ?, descripcion = ?, fecha_solicitud = ? WHERE id = ?");
+            $query->bind_param("issi", $this->idTipoAuxilio, $this->descripcion, $this->fechaSolicitud, $this->id);
             $query->execute();
             $query->close();
         }
@@ -60,14 +60,14 @@ public static function obtenerPorId($id) {
             id_usuario,
             id_tipo_auxilio,
             descripcion,
-            fecha_solicitud,
+            CONVERT_TZ(fecha_solicitud, '+00:00', '-05:00') AS fecha_solicitud,
                 estado,
                 observaciones
         FROM solicitudes_auxilios
         WHERE id = ?");
     $query->bind_param("i", $id);
     $query->execute();
-    $query->bind_result($id, $idUsuario, $tipoAuxilio, $descripcion, $fechaSolicitud, $estado, $observaciones);
+    $query->bind_result($id, $idUsuario, $idTipoAuxilio, $descripcion, $fechaSolicitud, $estado, $observaciones);
     $solicitud = null;
     if ($query->fetch()) {
         $query->close();
@@ -83,7 +83,7 @@ public static function obtenerPorId($id) {
         }
         $adjuntosQuery->close();
 
-        $solicitud = new SolicitudAuxilio($id, $idUsuario, $tipoAuxilio, $descripcion, $fechaSolicitud, $estado, $observaciones, $adjuntos);
+        $solicitud = new SolicitudAuxilio($id, $idUsuario, $idTipoAuxilio, $descripcion, $fechaSolicitud, $estado, $observaciones, $adjuntos);
     } else {
         $query->close();
     }
@@ -109,7 +109,7 @@ public static function obtenerPorId($id) {
     );
     $query->bind_param("i", $idUsuario);
     $query->execute();
-    $query->bind_result($id, $idUsuarioBind, $tipoAuxilio, $descripcion, $fechaSolicitud, $estado, $observaciones);
+    $query->bind_result($id, $idUsuario, $idTipoAuxilio, $descripcion, $fechaSolicitud, $estado, $observaciones);
     
     $solAux = [];
 
@@ -127,7 +127,7 @@ public static function obtenerPorId($id) {
         $adjuntosQuery->close();
 
         
-        $solAux[] = new SolicitudAuxilio($id, $idUsuarioBind, $tipoAuxilio, $descripcion, $fechaSolicitud, $estado, $observaciones, $adjuntos);
+        $solAux[] = new SolicitudAuxilio($id, $idUsuario, $idTipoAuxilio, $descripcion, $fechaSolicitud, $estado, $observaciones, $adjuntos);
     }
 
     $query->close();
@@ -192,15 +192,14 @@ public static function obtenerPorId($id) {
 
     if (!empty($search)) {
         $whereConditions[] = "(
-            sa.descripcion LIKE ?
-            OR u.primer_nombre LIKE ?
+            u.primer_nombre LIKE ?
             OR u.primer_apellido LIKE ?
             OR u.numero_documento LIKE ?
             OR ta.nombre LIKE ?
         )";
         $searchParam = "%" . $search . "%";
-        $params = array_merge($params, array_fill(0, 5, $searchParam));
-        $types .= str_repeat("s", 5);
+        $params = array_merge($params, array_fill(0, 4, $searchParam));
+        $types .= str_repeat("s", 4);
     }
 
     
@@ -244,8 +243,8 @@ public static function obtenerPorId($id) {
     while ($row = $result->fetch_assoc()) {
         $solicitudes[] = [
             'id' => $row['id'],
-            'id_usuario' => $row['id_usuario'],
-            'id_tipo_auxilio' => $row['id_tipo_auxilio'],
+            'idUsuario' => $row['id_usuario'],
+            'idTipoAuxilio' => $row['id_tipo_auxilio'],
             'descripcion' => $row['descripcion'],
             'fechaSolicitud' => $row['fecha_solicitud'],
             'estado' => $row['estado'],

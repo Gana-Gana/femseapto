@@ -13,13 +13,13 @@ class SolicitudAuxilioController {
         $solicitud = new SolicitudAuxilio(
             null,
             $datos['idUsuario'],
-            $datos['tipoAuxilio'],
+            $datos['idTipoAuxilio'],
             $datos['descripcion'],
             date('Y-m-d'),
-            $datos['adjuntos_auxilio'] ?? []
-
+            null,
+            null,
+            $datos['adjuntosAuxilio'] ?? []
         );
-
 
         $solicitud->guardar();
         
@@ -38,12 +38,10 @@ class SolicitudAuxilioController {
             return false;
         }
 
-        $solicitud->tipoAuxilio = $datos['tipoAuxilio'];
-        $solicitud->descripcion = $datos['descripcion'];
-        $solicitud->adjuntos_auxilio = $datos['adjuntos_auxilio'] ?? null;
-        $solicitud->fechaSolicitud = $datos['fechaSolicitud'] ?? null;
-        $solicitud->estado = $datos['estado'] ?? null;
-        $solicitud->observaciones = $datos['observaciones'] ?? null;
+        $solicitud->idTipoAuxilio = $datos['idTipoAuxilio'] ?? $solicitud->idTipoAuxilio;
+        $solicitud->descripcion = $datos['descripcion'] ?? $solicitud->descripcion;
+        $solicitud->fechaSolicitud = $datos['fechaSolicitud'] ?? date('Y-m-d');
+        $solicitud->adjuntosAuxilio = $datos['adjuntosAuxilio'] ?? null;
 
         $solicitud->guardar();
 

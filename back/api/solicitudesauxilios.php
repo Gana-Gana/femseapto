@@ -7,13 +7,13 @@ require_once '../config/cors.php';
 $key = $_ENV['JWT_SECRET_KEY'];
 $token = $_COOKIE['auth_token'] ?? '';
 
-$decodedToken = verifyJWTToken($token, $key);
+// $decodedToken = verifyJWTToken($token, $key);
 
-if ($decodedToken === null) {
-    http_response_code(401);
-    echo json_encode(array("message" => "Token no válido o no proporcionado."));
-    exit();
-}
+// if ($decodedToken === null) {
+//     http_response_code(401);
+//     echo json_encode(array("message" => "Token no válido o no proporcionado."));
+//     exit();
+// }
 
 $controlador = new SolicitudAuxilioController();
 
@@ -34,27 +34,54 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         mkdir($uploadFileDir, 0777, true);
     }
 
-    if (isset($_FILES['adjuntos_auxilio']) && $_FILES['adjuntos_auxilio']['error'] === UPLOAD_ERR_OK) {
-        $fileTmpPath = $_FILES['adjuntos_auxilio']['tmp_name'];
-        $originalFileName = $_FILES['adjuntos_auxilio']['name'];
+    if (isset($_FILES['adjuntosAuxilio'])) {
+            $fileNames   = (array) $_FILES['adjuntosAuxilio']['name'];
+    $fileTmp     = (array) $_FILES['adjuntosAuxilio']['tmp_name'];
+    $fileErrors  = (array) $_FILES['adjuntosAuxilio']['error'];
+
+    $rutasGuardadas = [];
+error_log(print_r($_FILES['adjuntosAuxilio'], true));
+    foreach ($fileNames as $idx => $originalFileName) {
+        // Saltamos ficheros con error
+        if ($fileErrors[$idx] !== UPLOAD_ERR_OK) {
+            continue;
+        }
+
         $fileExtension = pathinfo($originalFileName, PATHINFO_EXTENSION);
+        // Ej.: 2699_15_1.pdf, 2699_15_2.png…
+        $newFileName   = sprintf(
+            '%s_%s_%d.%s',
+            $data['idUsuario'],
+            $idNuevo,
+            $idx + 1,
+            $fileExtension
+        );
 
-        $newFileName = $data['idUsuario'] . '_' . $idNuevo . '.' . $fileExtension;
+        $destPath = $uploadFileDir . $newFileName;
 
-        $dest_path = $uploadFileDir . $newFileName;
+        if (move_uploaded_file($fileTmp[$idx], $destPath)) {
+            $rutasGuardadas[] = 'uploads/documentsAllowances/' . $newFileName;
+        }
+    }
 
-        if (move_uploaded_file($fileTmpPath, $dest_path)) {
-            $relativeFilePath = 'uploads/documentsAllowances/' . $newFileName;
-            $data['adjuntos_auxilio'] = $relativeFilePath;
+    if (!$rutasGuardadas) {           // si ningún archivo se movió
+        http_response_code(400);
+        echo json_encode(['message' => 'No se pudo mover ningún archivo']);
+        exit();
+    }
+
+    // Pasamos **array** de rutas al controlador
+    $data['adjuntosAuxilio'] = $rutasGuardadas;
 
             if ($controlador->actualizar($idNuevo, $data)) {
                 http_response_code(201);
-                echo json_encode(['id' => $idNuevo, 'message' => 'Solicitud creada con éxito y archivo PDF guardado']);
-            } else {
-                http_response_code(500);
-                echo json_encode(['message' => 'Error al actualizar la solicitud con la ruta del archivo']);
-                exit();
-            }
+                echo json_encode([
+            'id'      => $idNuevo,
+            'message' => 'Solicitud creada con éxito y archivos guardados',
+            'rutas'   => $rutasGuardadas,
+            'files'  => $_FILES['adjuntosAuxilio']
+        ]);
+            
         } else {
             http_response_code(500);
             echo json_encode(['message' => 'Error al mover el archivo PDF']);
@@ -75,8 +102,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $id = $_GET['id'];
         $solicitud = $controlador->obtenerPorId($id);
 
-        if ($solicitud && isset($solicitud->adjuntos_auxilio)) {
-            $filepath = realpath(__DIR__ . '/../' . $solicitud->adjuntos_auxilio);
+        if ($solicitud && isset($solicitud->adjuntosAuxilio)) {
+            $filepath = realpath(__DIR__ . '/../' . $solicitud->adjuntosAuxilio);
 
             error_log("Ruta del archivo: $filepath");
 

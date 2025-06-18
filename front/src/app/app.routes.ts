@@ -99,7 +99,8 @@ export const routes: Routes = [
                             { path: 'credit', component: InfoRequestCreditComponent },
                             { path: 'saving', component: RequestSavingComponent },
                             { path: 'saving-withdrawal', component: RequestSavingWithdrawalComponent },
-                            { path: 'saving-history', component: SavingRequestHistoryComponent }
+                            { path: 'saving-history', component: SavingRequestHistoryComponent },
+                            { path: 'allowance', component: SavingRequestHistoryComponent }, // cambiar
                         ], 
                     },    
                 ]

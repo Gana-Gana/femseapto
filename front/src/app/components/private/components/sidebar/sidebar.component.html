@@ -348,6 +348,24 @@
         </ul>
       </div>
     </li>
+
+        <li class="mb-1" *ngIf="userRole === 2">
+      <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed"
+        data-bs-toggle="collapse" data-bs-target="#allowance-collapse" aria-expanded="false">
+        Auxilios
+      </button>
+      <div class="collapse" id="allowance-collapse">
+        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+          <li>
+            <a routerLink="/auth/user/request/allowance" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Solicitar Auxilio</a>
+          </li>
+        </ul>
+      </div>
+    </li>
+
+
+
+
     <!-- SIDEBAR DE EJECUTIVOS -->
     <li class="mb-1" *ngIf="userRole === 3">
       <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed"

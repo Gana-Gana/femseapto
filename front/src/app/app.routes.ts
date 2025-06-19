@@ -54,7 +54,8 @@ import { AgreementTypesListComponent } from './components/public/agreements/comp
 import { UsersReportComponent } from './components/private/admin/users-report/users-report.component';
 import { RequiredSavingBalanceComponent } from './components/private/user/required-saving-balance/required-saving-balance.component';
 import { AllowanceRequestsComponent } from './components/private/admin/components/allowance-requests/allowance-requests.component';
-
+import { InfoRequestAllowanceComponent } from './components/private/user/request/request-allowance/info-request-allowance/info-request-allowance.component';
+import { RequestAllowanceComponent } from './components/private/user/request/request-allowance/request-allowance.component';
 export const routes: Routes = [
     { path: '', component: PublicComponent,
         children: [
@@ -100,7 +101,7 @@ export const routes: Routes = [
                             { path: 'saving', component: RequestSavingComponent },
                             { path: 'saving-withdrawal', component: RequestSavingWithdrawalComponent },
                             { path: 'saving-history', component: SavingRequestHistoryComponent },
-                            { path: 'allowance', component: SavingRequestHistoryComponent }, // cambiar
+                            { path: 'allowance', component: RequestAllowanceComponent }, 
                         ], 
                     },    
                 ]

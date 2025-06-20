@@ -8,7 +8,6 @@ header('Content-Type: application/json');
 header('Access-Control-Allow-Origin: *');
 
 $controller = new TipoAuxilioController();
-echo json_encode($controller->obtenerDisponibles());
 
 $controller = new TipoAuxilioController();
 

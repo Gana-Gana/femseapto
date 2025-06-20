@@ -63,18 +63,23 @@ export class RequestAllowanceComponent implements OnInit {
   }
 
 
-  cargarTiposAuxilioDisponibles(): void {
-    this.allowanceTypeService.getTiposDisponibles().subscribe({
-      next: (tipos) => {
-        console.log('Tipos recibidos del backend:', tipos);
-        this.tiposAuxilio = tipos;
-        
-      },
-      error: (err) => {
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudieron cargar los tipos de auxilio' });
-      }
-    });
-  }
+ cargarTiposAuxilioDisponibles(): void {
+  console.log('Cargando tipos de auxilio disponibles...');
+  this.allowanceTypeService.getTiposDisponibles().subscribe({
+    next: (tipos) => {
+      console.log('Tipos obtenidos:', tipos); // para verificar en consola
+      this.tiposAuxilio = tipos;
+    },
+    error: (err) => {
+      console.error('Error al cargar tipos:', err);
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'No se pudieron cargar los tipos de auxilio'
+      });
+    }
+  });
+}
 
   validateUserRecords(): void {
     const token = this.loginService.getTokenClaims();

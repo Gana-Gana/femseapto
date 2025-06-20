@@ -10,23 +10,6 @@ class TipoAuxilio {
         $this->nombre = $nombre;
     }
 
-    public function guardar() {
-        $db = getDB();
-        if ($this->id === null) {
-            $query = $db->prepare("INSERT INTO tipos_auxilios (nombre) VALUES (?)");
-            $query->bind_param("s", $this->nombre);
-        } else {
-            $query = $db->prepare("UPDATE tipos_auxilios SET nombre = ? WHERE id = ?");
-            $query->bind_param("si", $this->nombre, $this->id);
-        }
-        $query->execute();
-        if ($this->id === null) {
-            $this->id = $query->insert_id;
-        }
-        $query->close();
-        $db->close();
-    }
-
     public static function obtenerPorId($id) {
         $db = getDB();
         $query = $db->prepare("SELECT id, nombre FROM tipos_auxilios WHERE id = ?");
@@ -54,15 +37,22 @@ class TipoAuxilio {
         return $tiposAux;
     }
 
-    public function eliminar() {
+    public static function obtenerDisponibles(){
         $db = getDB();
-        if ($this->id !== null) {
-            $query = $db->prepare("DELETE FROM tipos_auxilios WHERE id = ?");
-            $query->bind_param("i", $this->id);
-            $query->execute();
-            $query->close();
+        $query = $db->prepare("SELECT id, nombre FROM tipos_auxilios 
+    WHERE (fecha_inicio IS NULL OR CURDATE() >= fecha_inicio)
+      AND (fecha_fin IS NULL OR CURDATE() <= fecha_fin)");
+
+        $query->execute();
+        $result = $query->get_result();
+
+        $tiposDisponibles = [];
+        while ($row = $result->fetch_assoc()) {
+            $tiposDisponibles[] = $row;
         }
         $db->close();
+        return $tiposDisponibles;
     }
+
 }
 ?>

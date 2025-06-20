@@ -6,7 +6,9 @@ import { CurrencyFormatPipe } from '../../../../pipes/currency-format.pipe';
 import { LoginService } from '../../../../../services/login.service';
 import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
+import { RequestAllowanceUserService } from '../../../../../services/request-allowance-user.service';
 import { RequestAllowanceService } from '../../../../../services/request-allowance.service';
+import { AllowanceTypeService, TipoAuxilio } from '../../../../../services/allowance-type.service';
 
 import { InfoRequestAllowanceComponent } from './info-request-allowance/info-request-allowance.component';  
 
@@ -26,6 +28,7 @@ import { NaturalpersonService } from '../../../../../services/naturalperson.serv
   styleUrls: ['./request-allowance.component.css']
 })
 export class RequestAllowanceComponent implements OnInit {
+  tiposAuxilio: TipoAuxilio[] = [];
   allowanceForm!: FormGroup;
   displayMessageNatPerson: string = '';
   isAdditionalDisabled: boolean = false;
@@ -34,8 +37,9 @@ export class RequestAllowanceComponent implements OnInit {
   isSubmitting: boolean = false;
 
   constructor(
+    private allowanceTypeService: AllowanceTypeService,
     private fb: FormBuilder,
-    private allowanceService: RequestAllowanceService,
+    private allowanceService: RequestAllowanceUserService,
     private loginService: LoginService,
     private messageService: MessageService,
     private router: Router,
@@ -53,8 +57,23 @@ export class RequestAllowanceComponent implements OnInit {
 
   ngOnInit(): void {
     this.validateUserRecords();
+    this.cargarTiposAuxilioDisponibles();
 
     
+  }
+
+
+  cargarTiposAuxilioDisponibles(): void {
+    this.allowanceTypeService.getTiposDisponibles().subscribe({
+      next: (tipos) => {
+        console.log('Tipos recibidos del backend:', tipos);
+        this.tiposAuxilio = tipos;
+        
+      },
+      error: (err) => {
+        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudieron cargar los tipos de auxilio' });
+      }
+    });
   }
 
   validateUserRecords(): void {

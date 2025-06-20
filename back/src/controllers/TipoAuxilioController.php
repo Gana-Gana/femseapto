@@ -4,30 +4,6 @@ require_once __DIR__ . '/../models/TipoAuxilioModel.php';
 
 class TipoAuxilioController {
 
-    public function crear($datos) {
-        $tipoAuxilio = new TipoAuxilio(
-            null, // El id se genera automáticamente al guardar
-            $datos['nombre']
-        );
-
-        $tipoAuxilio->guardar();
-        
-        return $tipoAuxilio->id;
-    }
-
-    public function actualizar($id, $datos) {
-        $tipoAuxilio = TipoAuxilio::obtenerPorId($id);
-        if (!$tipoAuxilio) {
-            return false;
-        }
-
-        $tipoAuxilio->nombre = $datos['nombre'];
-
-        $tipoAuxilio->guardar();
-
-        return true;
-    }
-
     public function obtenerPorId($id) {
         $tipoAuxilio = TipoAuxilio::obtenerPorId($id);
         if ($tipoAuxilio) {
@@ -48,15 +24,15 @@ class TipoAuxilioController {
         }
     }
 
-    public function eliminar($id) {
-        $tipoAuxilio = TipoAuxilio::obtenerPorId($id);
-        if (!$tipoAuxilio) {
-            return false;
+    public function obtenerDisponibles() {
+        $tiposDisponibles = TipoAuxilio::obtenerDisponibles();
+        if ($tiposDisponibles) {
+            return $tiposDisponibles;
+        } else {
+            http_response_code(404);
+            return array("message" => "No hay tipos de Auxilio disponibles en este momento.");
         }
-
-        $tipoAuxilio->eliminar();
-
-        return true;
     }
+    
 }
 ?>

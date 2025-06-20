@@ -3,42 +3,39 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { map } from 'rxjs/operators';
 
-// Environment component
+
 import { environment } from '../../environments/environment';
+
+export interface TipoAuxilio {
+  id: number;
+  nombre: string;
+}
 
 @Injectable({
   providedIn: 'root',
 })
 export class AllowanceTypeService {
+
   private apiUrl: string = environment.apiUrl;
 
   constructor(private http: HttpClient) {}
 
-  getAll(): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/tiposauxilios.php`);
-  }
+  getTiposDisponibles(): Observable<TipoAuxilio[]> {
+  return this.http.get<TipoAuxilio[]>(`${this.apiUrl}/tiposauxilio.php`, {
+    withCredentials: true
+  });
+}
 
-  getById(id: number): Observable<any> {
-    return this.http.get<any>(`${this.apiUrl}/tiposauxilios.php?id=${id}`);
-  }
 
-  getNameById(id: number): Observable<string> {
-    return this.http.get<any>(`${this.apiUrl}/tiposauxilios.php?id=${id}`).pipe(
+  
+  getById(id: number): Observable<TipoAuxilio> {
+  return this.http.get<TipoAuxilio>(`${this.apiUrl}/tiposauxilio.php?id=${id}`);
+}
+
+getNameById(id: number): Observable<string> {
+    return this.http.get<any>(`${this.apiUrl}/tiposauxilio.php?id=${id}`).pipe(
       map((response) => response.nombre)
     );
   }
-
-  create(data: any): Observable<any> {
-    return this.http.post<any>(
-      `${this.apiUrl}/tiposauxilios.php`,
-      data
-    );
-  }
-
-  update(id: number, data: any): Observable<any> {
-    return this.http.put<any>(
-      `${this.apiUrl}/tiposauxilios.php?id=${id}`,
-      data
-    );
-  }
+  
 }

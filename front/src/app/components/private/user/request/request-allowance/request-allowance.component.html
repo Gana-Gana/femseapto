@@ -1,1 +1,97 @@
-<p>request-allowance works!</p>
+<h5 class="mt-3">Solicitud de Auxilio</h5>
+<app-info-request-allowance />
+<p-toast></p-toast>
+
+<div class="alert alert-warning" role="alert" *ngIf="displayMessageNatPerson">
+  <strong>{{ displayMessageNatPerson }}</strong
+  >. De no hacerlo, no podrá completar la solicitud de auxilio, ya que esta
+  información es fundamental para el estudio de su solicitud.
+</div>
+
+<div class="card mb-5">
+  <div class="card-body">
+    <form
+      class="row g-3"
+      [formGroup]="allowanceForm"
+      (ngSubmit)="onSubmit()"
+      [attr.disabled]="isAdditionalDisabled ? true : null"
+    >
+      <!-- Tipo de Auxilio -->
+      <div class="form-group">
+  <label for="idTipoAuxilio">Tipo de Auxilio</label>
+  <select id="idTipoAuxilio" class="form-control" formControlName="idTipoAuxilio">
+  <option [value]="null" disabled selected>Seleccione una opción</option>
+  <option *ngFor="let tipo of tiposAuxilio" [value]="tipo.id">
+    {{ tipo.nombre }}
+  </option>
+</select>
+
+
+  <div *ngIf="tiposAuxilio.length === 0" class="text-danger mt-2">
+  No hay tipos de auxilio disponibles por el momento.
+</div>
+
+
+
+</div>
+
+
+
+
+      <!-- Descripción -->
+      <div class="col-md-12">
+        <label for="descripcion" class="form-label">Descripción</label>
+        <textarea
+          id="descripcion"
+          formControlName="descripcion"
+          rows="4"
+          class="form-control"
+          placeholder="Escriba una descripción opcional de la solicitud..."
+        >
+        </textarea>
+      </div>
+
+      <!-- Carga de documento PDF -->
+      <div class="col-md-12">
+        <label for="pdfFile" class="form-label">Subir soporte en PDF*</label>
+        <input
+          type="file"
+          id="pdfFile"
+          (change)="onFileChange($event)"
+          class="form-control"
+          accept="application/pdf"
+        />
+        <div
+          *ngIf="
+            allowanceForm.get('rutaDocumento')?.invalid &&
+            allowanceForm.get('rutaDocumento')?.touched
+          "
+        >
+          <small class="text-danger"
+            >Debe adjuntar el archivo PDF correspondiente.</small
+          >
+        </div>
+      </div>
+
+      <!-- Botón de envío -->
+      <div class="col-12">
+        <button
+          type="submit"
+          class="btn btn-success"
+          [disabled]="
+            allowanceForm.invalid || isAdditionalDisabled || isSubmitting
+          "
+        >
+          <span *ngIf="!isSubmitting">Enviar Solicitud</span>
+          <span
+            *ngIf="isSubmitting"
+            class="spinner-border spinner-border-sm"
+            role="status"
+            aria-hidden="true"
+          ></span>
+          <span *ngIf="isSubmitting"> Enviando...</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

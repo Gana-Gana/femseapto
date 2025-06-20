@@ -142,12 +142,7 @@ class PersonaNaturalController {
 
     public function obtenerPorIdUsuario($idUsuario) {
         $persona = PersonaNatural::obtenerPorIdUsuario($idUsuario);
-        if ($persona) {
-            return $persona;
-        } else {
-            http_response_code(404);
-            return array("message" => "Persona no encontrada.");
-        }
+        return $persona ?: null;
     }
 }
 ?>

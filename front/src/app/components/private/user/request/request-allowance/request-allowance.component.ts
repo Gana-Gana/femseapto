@@ -64,7 +64,6 @@ export class RequestAllowanceComponent implements OnInit {
 
 
  cargarTiposAuxilioDisponibles(): void {
-  console.log('Cargando tipos de auxilio disponibles...');
   this.allowanceTypeService.getTiposDisponibles().subscribe({
     next: (tipos) => {
       console.log('Tipos obtenidos:', tipos); // para verificar en consola
@@ -115,7 +114,7 @@ export class RequestAllowanceComponent implements OnInit {
       if (file.type === 'application/pdf') {
         this.pdfFile = file;
         this.allowanceForm.patchValue({ rutaDocumento: this.pdfFile });
-        this.allowanceForm.get('rutaDocumento')?.updateValueAndValidity();
+        this.allowanceForm.get('rutaDocumento')?.updateValueAndValidity(); // <-- corregido aquí
       } else {
         this.messageService.add({ 
           severity: 'error', 
@@ -136,16 +135,13 @@ export class RequestAllowanceComponent implements OnInit {
       if(token) {
         const userId = token.userId;
         const formData = new FormData()
-
-    
         formData.append('idUsuario', userId);
-
         formData.append('idTipoAuxilio', this.allowanceForm.value.idTipoAuxilio);
         formData.append('descripcion', this.allowanceForm.value.descripcion ?? '');
     
 
         if (this.pdfFile) {
-          formData.append('rutaDocumento', this.pdfFile, this.pdfFile.name);
+          formData.append('adjuntosAuxilio[]', this.pdfFile, this.pdfFile.name);
         } else {
           this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Debe subir la copia del documento' });
           this.isSubmitting = false;

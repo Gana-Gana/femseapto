@@ -13,7 +13,7 @@ export class RequestAllowanceUserService {
   constructor(private http: HttpClient) { }
 
   create(formData: FormData): Observable<any> {
-    return this.http.post(`${this.apiUrl}/solicitudesauxilio.php`, formData, { withCredentials: true });
+    return this.http.post(`${this.apiUrl}/solicitudesauxilios.php`, formData, { withCredentials: true });
   }
 
   getAll(params: { page: number; size: number; search?: string; date?: string }): Observable<{ data: any[], total: number }> {

@@ -1,22 +1,15 @@
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormBuilder, FormGroup, ReactiveFormsModule, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ToastModule } from 'primeng/toast';
-import { CurrencyFormatPipe } from '../../../../pipes/currency-format.pipe';
 import { LoginService } from '../../../../../services/login.service';
 import { MessageService } from 'primeng/api';
 import { Router } from '@angular/router';
-import { RequestAllowanceUserService } from '../../../../../services/request-allowance-user.service';
-import { RequestAllowanceService } from '../../../../../services/request-allowance.service';
-import { AllowanceTypeService, TipoAuxilio } from '../../../../../services/allowance-type.service';
-
-import { InfoRequestAllowanceComponent } from './info-request-allowance/info-request-allowance.component';  
-
-//import { UserInfoValidationService } from '../../../../../services/user-info-validation.service';
-
-import { RecommendationService } from '../../../../../services/recommendation.service';
-
 import { NaturalpersonService } from '../../../../../services/naturalperson.service';
+import { RequestAllowanceService } from '../../../../../services/request-allowance.service';
+import { AllowanceTypeService } from '../../../../../services/allowance-type.service';
+import { InfoRequestAllowanceComponent } from './info-request-allowance/info-request-allowance.component';
+
 
 
 @Component({
@@ -28,8 +21,10 @@ import { NaturalpersonService } from '../../../../../services/naturalperson.serv
   styleUrls: ['./request-allowance.component.css']
 })
 export class RequestAllowanceComponent implements OnInit {
-  tiposAuxilio: TipoAuxilio[] = [];
-  allowanceForm!: FormGroup;
+  allowanceForm: FormGroup;
+  allowanceTypes: any[] = [];
+  selectedAllowanceType: any = null;
+
   displayMessageNatPerson: string = '';
   isAdditionalDisabled: boolean = false;
 
@@ -37,54 +32,38 @@ export class RequestAllowanceComponent implements OnInit {
   isSubmitting: boolean = false;
 
   constructor(
-    private allowanceTypeService: AllowanceTypeService,
     private fb: FormBuilder,
-    private allowanceService: RequestAllowanceUserService,
+    private allowanceRequestService: RequestAllowanceService,
     private loginService: LoginService,
     private messageService: MessageService,
     private router: Router,
-    //private userInfoValidationService: UserInfoValidationService,
-
-    private recommendationService: RecommendationService,
+    private allowanceTypeService: AllowanceTypeService,
     private naturalpersonService: NaturalpersonService  
   ) {
     this.allowanceForm = this.fb.group({
-      idTipoAuxilio: [null, Validators.required],
-      descripcion:[null],
+      idTipoAuxilio: ['', Validators.required],
+      descripcion: ['', Validators.required],
       rutaDocumento: [null, Validators.required]
     });
   }
 
   ngOnInit(): void {
     this.validateUserRecords();
-    this.cargarTiposAuxilioDisponibles();
 
-    
+    this.allowanceTypeService.getActive().subscribe(
+      data => {
+        this.allowanceTypes = data;
+      },
+      error => {
+        console.error('Error al obtener tipos de auxilios activos:', error);
+      }
+    );
   }
-
-
- cargarTiposAuxilioDisponibles(): void {
-  this.allowanceTypeService.getTiposDisponibles().subscribe({
-    next: (tipos) => {
-      console.log('Tipos obtenidos:', tipos); // para verificar en consola
-      this.tiposAuxilio = tipos;
-    },
-    error: (err) => {
-      console.error('Error al cargar tipos:', err);
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'No se pudieron cargar los tipos de auxilio'
-      });
-    }
-  });
-}
 
   validateUserRecords(): void {
     const token = this.loginService.getTokenClaims();
 
     if (token) {
-        // Inicialmente, deshabilitamos la solicitud de crédito hasta que todas las validaciones pasen
         let allValid = true;
 
         this.naturalpersonService.validate(token.userId).subscribe(response => {
@@ -95,9 +74,6 @@ export class RequestAllowanceComponent implements OnInit {
             }
             this.checkValidationComplete(allValid);
         });
-
-  
-    
     }   
 }
 
@@ -105,8 +81,6 @@ export class RequestAllowanceComponent implements OnInit {
         this.isAdditionalDisabled = !allValid;
     }
 
-
-  
   onFileChange(event: Event): void {
     const input = event.target as HTMLInputElement;
     if (input.files && input.files.length > 0) {
@@ -114,7 +88,7 @@ export class RequestAllowanceComponent implements OnInit {
       if (file.type === 'application/pdf') {
         this.pdfFile = file;
         this.allowanceForm.patchValue({ rutaDocumento: this.pdfFile });
-        this.allowanceForm.get('rutaDocumento')?.updateValueAndValidity(); // <-- corregido aquí
+        this.allowanceForm.get('rutaDocumento')?.updateValueAndValidity();
       } else {
         this.messageService.add({ 
           severity: 'error', 
@@ -134,21 +108,20 @@ export class RequestAllowanceComponent implements OnInit {
 
       if(token) {
         const userId = token.userId;
-        const formData = new FormData()
+        const formData = new FormData();
+
         formData.append('idUsuario', userId);
         formData.append('idTipoAuxilio', this.allowanceForm.value.idTipoAuxilio);
-        formData.append('descripcion', this.allowanceForm.value.descripcion ?? '');
-    
-
+        formData.append('descripcion', this.allowanceForm.value.descripcion);
         if (this.pdfFile) {
-          formData.append('adjuntosAuxilio[]', this.pdfFile, this.pdfFile.name);
+          formData.append('rutaDocumento', this.pdfFile, this.pdfFile.name);
         } else {
           this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Debe subir la copia del documento' });
           this.isSubmitting = false;
           return;
         }
 
-        this.allowanceService.create(formData).subscribe({
+        this.allowanceRequestService.create(formData).subscribe({
           next: () => {
             this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Solicitud de auxilio creada correctamente' });
             setTimeout(() => {

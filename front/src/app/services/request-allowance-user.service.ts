@@ -34,12 +34,17 @@ export class RequestAllowanceUserService {
     );
   }
 
-  // Obtener una solicitud por su ID
   getById(id: number): Observable<any> {
     return this.http.get<any>(`${this.apiUrl}/solicitudesauxilio.php?id=${id}`, { withCredentials: true });
   }
 
-  // Descargar PDF
+  getRequestsByDateRange(startDate: string, endDate: string): Observable<any[]> {
+    const params = new HttpParams()
+      .set('startDate', startDate)
+      .set('endDate', endDate);
+    return this.http.get<any[]>(`${this.apiUrl}/solicitudesauxilio.php`, { params, withCredentials: true });
+  }
+
   async downloadRequestPdf(idSolicitud: number, numeroDocumento: number): Promise<void> {
     try {
       const pdfData = await firstValueFrom(
@@ -48,8 +53,7 @@ export class RequestAllowanceUserService {
           responseType: 'blob'
         })
       );
-      // Aquí puedes usar file-saver si lo necesitas como en el otro ejemplo
-      // saveAs(pdfData, `Solicitud_Auxilio_${idSolicitud}_${numeroDocumento}.pdf`);
+      saveAs(pdfData, `Solicitud_Auxilio_${idSolicitud}_${numeroDocumento}.pdf`);
     } catch (error) {
       console.error('Error al descargar el PDF:', error);
     }

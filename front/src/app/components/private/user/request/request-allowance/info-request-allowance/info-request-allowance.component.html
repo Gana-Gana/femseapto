@@ -1,6 +1,47 @@
-<div class="container mt-3">
-  <h1>Solicitud de Auxilio</h1>
-  <p>Aquí podrás gestionar de manera fácil y rápida tus solicitudes de auxilio. Por favor, asegúrate de actualizar tu información antes de enviar tu solicitud.
-Selecciona el tipo de auxilio, describe brevemente tu necesidad y adjunta los soportes requeridos en formato PDF.</p>
-
-
+<form [formGroup]="infoForm" (ngSubmit)="onSubmit()">
+  <input type="hidden" formControlName="id" />
+  <h5>Información Personal</h5>
+  <div class="card">
+    <div class="card-body">
+      <div class="row g-3">
+        <div class="col-md-6">
+          <label for="dependenciaEmpresa" class="form-label required-label">Dependencia a la que hace parte</label>
+          <input formControlName="dependenciaEmpresa" type="text" class="form-control" />
+        </div>
+        <div class="col-md-6">
+          <label for="cargoOcupa" class="form-label required-label">Cargo que ocupa</label>
+          <input formControlName="cargoOcupa" type="text" class="form-control" />
+        </div>
+        <div class="col-md-6">
+          <label for="celular" class="form-label">Número de celular</label>
+          <input
+            formControlName="celular"
+            type="text"
+            minlength="7"
+            maxlength="10"
+            class="form-control"
+          />
+        </div>
+        <div class="col-md-6">
+          <label for="direccionResidencia" class="form-label required-label">Dirección de residencia</label>
+          <input formControlName="direccionResidencia" type="text" class="form-control" />
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="d-grid gap-2 mt-3">
+    <button
+      class="btn btn-success"
+      [disabled]="infoForm.invalid || isSubmitting"
+      type="submit"
+    >
+      <ng-container *ngIf="!isSubmitting; else loadingTemplate">
+        Guardar Información Personal
+      </ng-container>
+      <ng-template #loadingTemplate>
+        <span class="spinner-border spinner-border-sm"></span>
+        Cargando...
+      </ng-template>
+    </button>
+  </div>
+</form>

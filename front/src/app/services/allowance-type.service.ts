@@ -18,24 +18,22 @@ export class AllowanceTypeService {
 
   private apiUrl: string = environment.apiUrl;
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient) { }
 
-  getTiposDisponibles(): Observable<TipoAuxilio[]> {
-  return this.http.get<TipoAuxilio[]>(`${this.apiUrl}/tiposauxilio.php`, {
-    withCredentials: true
-  });
-}
+  getActive(): Observable<TipoAuxilio[]> {
+    return this.http.get<TipoAuxilio[]>(`${this.apiUrl}/tiposauxilio.php?disponibles`, {
+      withCredentials: true
+    });
+  }
 
-
-  
   getById(id: number): Observable<TipoAuxilio> {
-  return this.http.get<TipoAuxilio>(`${this.apiUrl}/tiposauxilio.php?id=${id}`);
-}
+    return this.http.get<TipoAuxilio>(`${this.apiUrl}/tiposauxilio.php?id=${id}`);
+  }
 
-getNameById(id: number): Observable<string> {
+  getNameById(id: number): Observable<string> {
     return this.http.get<any>(`${this.apiUrl}/tiposauxilio.php?id=${id}`).pipe(
       map((response) => response.nombre)
     );
   }
-  
+
 }

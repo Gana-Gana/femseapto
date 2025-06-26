@@ -11,7 +11,6 @@ import { AllowanceTypeService } from '../../../../../services/allowance-type.ser
 import { InfoRequestAllowanceComponent } from './info-request-allowance/info-request-allowance.component';
 
 
-
 @Component({
   selector: 'app-request-allowance',
   standalone: true,
@@ -28,7 +27,7 @@ export class RequestAllowanceComponent implements OnInit {
   displayMessageNatPerson: string = '';
   isAdditionalDisabled: boolean = false;
 
-  pdfFile: File | null = null;
+  pdfFiles: File[] = [];
   isSubmitting: boolean = false;
 
   constructor(
@@ -43,7 +42,7 @@ export class RequestAllowanceComponent implements OnInit {
     this.allowanceForm = this.fb.group({
       idTipoAuxilio: ['', Validators.required],
       descripcion: ['', Validators.required],
-      rutaDocumento: [null, Validators.required]
+      adjuntosAuxilio: [null, Validators.required]
     });
   }
 
@@ -81,25 +80,36 @@ export class RequestAllowanceComponent implements OnInit {
         this.isAdditionalDisabled = !allValid;
     }
 
-  onFileChange(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      const file = input.files[0];
-      if (file.type === 'application/pdf') {
-        this.pdfFile = file;
-        this.allowanceForm.patchValue({ rutaDocumento: this.pdfFile });
-        this.allowanceForm.get('rutaDocumento')?.updateValueAndValidity();
-      } else {
-        this.messageService.add({ 
-          severity: 'error', 
-          summary: 'Archivo no válido', 
-          detail: 'Solo se permiten archivos en formato PDF' 
-        });
-        input.value = '';
-      }
+onFileChange(event: Event): void {
+  const input = event.target as HTMLInputElement;
+  if (input.files && input.files.length > 0) {
+    const selectedFiles = Array.from(input.files);
+    const validFiles = selectedFiles.filter(file => file.type === 'application/pdf');
+
+    if (validFiles.length !== selectedFiles.length) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Archivos no válidos',
+        detail: 'Algunos archivos no son PDF y fueron descartados'
+      });
+    }
+
+    this.pdfFiles = validFiles;
+
+    if (this.pdfFiles.length > 0) {
+      this.allowanceForm.patchValue({ adjuntosAuxilio: this.pdfFiles });
+      this.allowanceForm.get('adjuntosAuxilio')?.updateValueAndValidity();
+    } else {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Error',
+        detail: 'Debe subir al menos un archivo PDF válido'
+      });
+      input.value = '';
     }
   }
-  
+}
+
 
   onSubmit(): void {
     if (this.allowanceForm.valid) {
@@ -113,10 +123,12 @@ export class RequestAllowanceComponent implements OnInit {
         formData.append('idUsuario', userId);
         formData.append('idTipoAuxilio', this.allowanceForm.value.idTipoAuxilio);
         formData.append('descripcion', this.allowanceForm.value.descripcion);
-        if (this.pdfFile) {
-          formData.append('rutaDocumento', this.pdfFile, this.pdfFile.name);
+        if (this.pdfFiles.length > 0) {
+          this.pdfFiles.forEach(file => {
+            formData.append('adjuntosAuxilio[]', file, file.name);
+          });
         } else {
-          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Debe subir la copia del documento' });
+          this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Debe subir al menos un archivo' });
           this.isSubmitting = false;
           return;
         }
@@ -137,4 +149,5 @@ export class RequestAllowanceComponent implements OnInit {
       }
     }
   }
+  
 }

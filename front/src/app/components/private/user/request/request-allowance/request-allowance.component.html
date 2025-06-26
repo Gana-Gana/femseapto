@@ -1,4 +1,5 @@
 <p-toast></p-toast>
+<app-info-request-allowance></app-info-request-allowance>
   <h5 class="mt-3">Solicitud de Auxilio</h5>
   <div class="alert alert-warning" role="alert" *ngIf="displayMessageNatPerson">
     <strong>{{ displayMessageNatPerson }}</strong>. De no hacerlo, no podrá completar la solicitud de auxilio, ya que esta información es fundamental para el estudio de su solicitud.
@@ -25,7 +26,7 @@
           <div class="col-md-12">
             <div class="form-floating">
               <textarea class="form-control" placeholder="descripcion" formControlName="descripcion" id="descripcion" style="height: 150px"></textarea>
-              <label for="descripcion">Escriba la descripción del por qué requiere el auxilio</label>
+              <label for="descripcion">Indique los motivos por los cuales solicita el auxilio.</label>
             </div>
           </div>
         </div>
@@ -33,8 +34,8 @@
 
         <div class="col-md-12">
           <label for="pdfFile" class="form-label">Subir copia de documento de identidad en archivo PDF</label>
-          <input type="file" (change)="onFileChange($event)" class="form-control" accept="application/pdf" />
-          <div *ngIf="allowanceForm.controls['rutaDocumento'].invalid && allowanceForm.controls['rutaDocumento'].touched">
+          <input type="file" multiple (change)="onFileChange($event)" class="form-control" accept="application/pdf" />
+          <div *ngIf="allowanceForm.controls['adjuntosAuxilio'].invalid && allowanceForm.controls['adjuntosAuxilio'].touched">
             <small class="text-danger">La copia de documento de identidad es obligatoria</small>
           </div>
         </div>

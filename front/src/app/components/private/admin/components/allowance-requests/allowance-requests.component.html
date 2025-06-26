@@ -1,7 +1,7 @@
 <div class="container mt-5">
   <h1>Solicitudes de Auxilio</h1>
- 
-  <app-allowance-report *ngIf="userRole !== 4" />
+
+  <app-allowance-report *ngIf="userRole !== 4 && userRole !== 5" />
 
   <div class="card">
     <p-toolbar styleClass="mb-1 gap-2">
@@ -42,7 +42,7 @@
       [lazy]="true"
       (onLazyLoad)="loadAllowanceRequests(($event.first ?? 0) / ($event.rows ?? 10) + 1, $event.rows ?? 10, searchQuery, dateQuery)"
       [rowsPerPageOptions]="[10, 25, 50]"
-      [globalFilterFields]="['id', 'numeroDocumento', 'nombreAsociado', 'descripcion', 'fechaSolicitud']"
+      [globalFilterFields]="['id', 'adjuntos_auxilio', 'nombreAsociado', 'descripcion', 'fechaSolicitud', 'estado', 'observaciones']"
       [tableStyle]="{ 'min-width': '75rem' }"
     >
       <ng-template pTemplate="header">
@@ -53,6 +53,10 @@
           <th style="width: 20%">Tipo de Auxilio</th>
           <th style="width: 25%">Descripción</th>
           <th style="width: 15%">Fecha de Solicitud</th>
+          <th style="width: 15%">Estado</th>
+          <th style="width: 15%">Observaciones</th>
+          <th style="width: 20%">Adjuntos</th>
+          <th *ngIf="userRole === 5" style="text-align: center;">Acciones</th>
         </tr>
       </ng-template>
 
@@ -65,19 +69,120 @@
           <td>{{ allowanceRequest.descripcion }}</td>
           <td>{{ allowanceRequest.fechaSolicitud | date: 'dd/MM/yyyy' }}</td>
           <td>
-            <app-generate-allowance-request
-              [userId]="allowanceRequest.id_usuario"
-              [idSolicitudAuxilio]="allowanceRequest.id"
-            ></app-generate-allowance-request>
+            {{
+              allowanceRequest.estado === null
+                ? 'Pendiente'
+                : allowanceRequest.estado === 1
+                ? 'Aprobado'
+                : 'Rechazado'
+            }}
+          </td>
+          <td>
+            <span *ngIf="allowanceRequest.observaciones">{{ allowanceRequest.observaciones }}</span>
+          </td>
+          <td>
+            <ul *ngIf="allowanceRequest.adjuntos_auxilio?.length > 0; else noAdjuntos">
+              <li *ngFor="let archivo of allowanceRequest.adjuntos_auxilio">
+                <a
+                  [href]="'http://localhost/femseapto/uploads/' + archivo"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="text-primary"
+                >
+                  {{ archivo.split('/').pop() }}
+                </a>
+              </li>
+            </ul>
+            <ng-template #noAdjuntos>
+              <span class="text-muted">Sin adjuntos</span>
+            </ng-template>
+          </td>
+          <td *ngIf="userRole === 5">
+            <button
+              pButton
+              icon="pi pi-pencil"
+              class="p-button-sm p-button-rounded p-button-warning"
+              (click)="openEditModal(allowanceRequest)"
+              label="Gestionar"
+            ></button>
           </td>
         </tr>
       </ng-template>
-
       <ng-template pTemplate="emptymessage">
         <tr>
           <td colspan="7">No se encontraron solicitudes de auxilio.</td>
+          <td [attr.colspan]="userRole === 5 ? 7 : 8">
+            No se encontraron solicitudes de auxilio.
+          </td>
         </tr>
       </ng-template>
     </p-table>
+    <p-dialog
+      header="Gestionar Solicitud"
+      [(visible)]="showEditModal"
+      [modal]="true"
+      [style]="{ width: '30vw' }"
+      [closable]="false"
+    >
+      <div *ngIf="!successfullyManaged">
+        <div class="field mb-3 p-fluid">
+          <label for="estado" class="font-semibold">Estado</label>
+          <p-dropdown
+            inputId="estado"
+            [options]="[
+              { label: 'Aprobado', value: 1 },
+              { label: 'Rechazado', value: 0 }
+            ]"
+            [(ngModel)]="selectedStatus"
+            placeholder="Seleccione un estado"
+            class="w-full"
+          ></p-dropdown>
+        </div>
+
+        <div class="field mb-3 p-fluid">
+          <label for="observaciones" class="font-semibold">Observación</label>
+          <textarea
+            id="observaciones"
+            rows="4"
+            pInputTextarea
+            [(ngModel)]="commentText"
+            class="w-full p-inputtext"
+            placeholder="Escriba una observación..."
+          ></textarea>
+        </div>
+      
+        <div class= "flex">
+          <button
+            pButton
+            label="Guardar"
+            icon="pi pi-check"
+            class="p-button-secondary p-button-sm p-button-rounded"
+            (click)="saveStatusChanges()"
+          ></button>
+          <button
+            pButton
+            label="Cancelar"
+            icon="pi pi-times"
+            class="p-button-danger p-button-sm p-button-rounded"
+            (click)="closeModal()"
+          ></button>
+        </div>
+      </div>
+
+      <div *ngIf="successfullyManaged" class="text-center py-4">
+        <i class="pi pi-check-circle text-green-500" style="font-size: 2rem;"></i>
+        <p class="text-green-700 text-lg font-medium mt-2">
+          Solicitud gestionada con éxito.
+        </p>
+        <button
+          pButton
+          label="Cerrar"
+          icon="pi pi-check"
+          class="p-button-success mt-3"
+          (click)="closeModal()"
+        ></button>
+      </div>
+    </p-dialog>
+
   </div>
 </div>

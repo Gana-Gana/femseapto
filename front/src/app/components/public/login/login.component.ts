@@ -44,6 +44,7 @@ export class LoginComponent {
   
           const decodedToken = this.jwtHelper.decodeToken(response.token);
           const rol = decodedToken.id_rol;
+          localStorage.setItem('userRole', rol.toString());
           if (response.primer_ingreso === 0) {
             this.router.navigate(['/auth/settings']);
           } else {
@@ -53,6 +54,8 @@ export class LoginComponent {
               this.router.navigate(['/auth/executive']);
             } else if (rol === 4) {
               this.router.navigate(['/auth/social-oversight']);
+            } else if (rol === 5) {
+              this.router.navigate(['/auth/committee']);
             }else {
               this.router.navigate(['/auth/user']);
             }

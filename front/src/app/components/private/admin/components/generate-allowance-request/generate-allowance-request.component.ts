@@ -25,6 +25,7 @@ import { RequestAllowanceService } from '../../../../../services/request-allowan
   styleUrl: './generate-allowance-request.component.css',
 })
 export class GenerateAllowanceRequestComponent implements OnInit {
+  public userRole: number = 0;
   @Input() userId: number = 0;
   @Input() idSolicitudAuxilio: number = 0;
 
@@ -115,7 +116,12 @@ export class GenerateAllowanceRequestComponent implements OnInit {
     private requestAllowanceService: RequestAllowanceService
   ) {}
 
-  ngOnInit() {}
+   ngOnInit(): void {
+    const role = localStorage.getItem('userRole');
+    if (role) {
+      this.userRole = parseInt(role, 10);
+    }
+  }
 
   async loadData() {
     if (this.idSolicitudAuxilio) {

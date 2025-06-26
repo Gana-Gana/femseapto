@@ -24,18 +24,19 @@ class SolicitudAuxilio{
         $this->adjuntosAuxilio = $adjuntosAuxilio;
     }
 
-     public function guardar() {
+    public function guardar() {
         $db = getDB();
         if ($this->id === null) {
-            $query = $db->prepare("INSERT INTO solicitudes_auxilios (id_usuario, id_tipo_auxilio, descripcion) VALUES (?, ?, ?)");
+            $query = $db->prepare("INSERT INTO solicitudes_auxilios (id_usuario, id_tipo_auxilio, descripcion) VALUES (?, ?, ?, ?, ?)");
             $query->bind_param("iis", $this->idUsuario, $this->idTipoAuxilio, $this->descripcion);
             $query->execute();
             $this->id = $query->insert_id;
             $query->close();
             
         } else {
-            $query = $db->prepare("UPDATE solicitudes_auxilios SET id_tipo_auxilio = ?, descripcion = ?, fecha_solicitud = ? WHERE id = ?");
-            $query->bind_param("issi", $this->idTipoAuxilio, $this->descripcion, $this->fechaSolicitud, $this->id);
+            $query = $db->prepare("UPDATE solicitudes_auxilios SET id_tipo_auxilio = ?, descripcion = ?, fecha_solicitud = ?, estado = ?, observaciones = ? WHERE id = ?");
+            $query->bind_param("issisi", $this->idTipoAuxilio, $this->descripcion, $this->fechaSolicitud, $this->estado, $this->observaciones, $this->id);
+            error_log("Actualizando solicitud $this->id con estado=$this->estado y observaciones=$this->observaciones");
             $query->execute();
             $query->close();
         }
@@ -48,14 +49,12 @@ class SolicitudAuxilio{
         }
         $insertAdjunto->close();
     }
-        
-      
-    }
+}
 
 public static function obtenerPorId($id) {
     $db = getDB();
     $query = $db->prepare(
-        "SELECT
+        "SELECT+
             id,
             id_usuario,
             id_tipo_auxilio,
@@ -151,7 +150,25 @@ public static function obtenerPorId($id) {
         $result = $db->query($query);
         $solicitudes = [];
         while ($row = $result->fetch_assoc()) {
-            $solicitudes[] = new SolicitudAuxilio($row['id'], $row['id_usuario'], $row['id_tipo_auxilio'], $row['descripcion'], $row['fecha_solicitud'], $row['estado'], $row['observaciones']);
+            $adjuntosQuery = $db->prepare("SELECT ruta_archivo FROM adjuntos_auxilios WHERE id_solicitud = ?");
+            $adjuntosQuery->bind_param("i", $row['id']);
+            $adjuntosQuery->execute();
+            $adjuntosResult = $adjuntosQuery->get_result();
+            $adjuntos = [];
+            while ($a = $adjuntosResult->fetch_assoc()) {
+                $adjuntos[] = $a['ruta_archivo'];
+            }
+            $adjuntosQuery->close();
+
+            $solicitudes[] = new SolicitudAuxilio(
+                $row['id'], 
+                $row['id_usuario'], 
+                $row['id_tipo_auxilio'], 
+                $row['descripcion'], 
+                $row['fecha_solicitud'], 
+                $row['estado'], 
+                $row['observaciones']
+            );
         }
         $db->close();
         return $solicitudes;
@@ -241,6 +258,16 @@ public static function obtenerPorId($id) {
     $solicitudes = [];
 
     while ($row = $result->fetch_assoc()) {
+        $adjuntosQuery = $db->prepare("SELECT ruta_archivo FROM adjuntos_auxilios WHERE id_solicitud = ?");
+        $adjuntosQuery->bind_param("i", $row['id']);
+        $adjuntosQuery->execute();
+        $adjuntosResult = $adjuntosQuery->get_result();
+        $adjuntos = [];
+        while ($a = $adjuntosResult->fetch_assoc()) {
+            $adjuntos[] = $a['ruta_archivo'];
+        }
+        $adjuntosQuery->close();
+
         $solicitudes[] = [
             'id' => $row['id'],
             'idUsuario' => $row['id_usuario'],
@@ -251,7 +278,8 @@ public static function obtenerPorId($id) {
             'observaciones' => $row['observaciones'],
             'numeroDocumento' => $row['numero_documento'],
             'nombreAsociado' => trim("{$row['primer_nombre']} {$row['segundo_nombre']} {$row['primer_apellido']} {$row['segundo_apellido']}"),
-            'nombreTipoAuxilio' => $row['nombre_tipo_auxilio']
+            'nombreTipoAuxilio' => $row['nombre_tipo_auxilio'],
+            'adjuntos_auxilio' => $adjuntos
         ];
     }
 
@@ -333,10 +361,4 @@ public static function obtenerPorId($id) {
         $db->close();
         return $solicitudes;
     }
-
-
 }
-
-  
-
-

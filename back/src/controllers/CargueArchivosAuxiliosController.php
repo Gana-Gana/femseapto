@@ -14,7 +14,7 @@ class CargueArchivosAuxiliosController {
         $archivos = $_FILES['archivos'];
         $rutasGuardadas = [];
 
-        $rutaDestino = "../uploads/auxilios/" . $idSolicitud;
+        $rutaDestino = "../uploads/documentsAllowances/" . $idSolicitud;
         if (!file_exists($rutaDestino)) {
             mkdir($rutaDestino, 0777, true);
         }
@@ -27,7 +27,7 @@ class CargueArchivosAuxiliosController {
                 $rutaArchivo = $rutaDestino . '/' . uniqid() . "_" . $nombreArchivo;
 
                 if (move_uploaded_file($archivos['tmp_name'][$i], $rutaArchivo)) {
-                    $rutasGuardadas[] = $rutaArchivo;
+                    $rutasGuardadas[] = str_replace('../', '', $rutaArchivo);
                 } else {
                     http_response_code(500);
                     echo json_encode(['error' => 'Error al mover el archivo: ' . $nombreArchivo]);
@@ -39,7 +39,7 @@ class CargueArchivosAuxiliosController {
             $rutaArchivo = $rutaDestino . '/' . uniqid() . "_" . $nombreArchivo;
 
             if (move_uploaded_file($archivos['tmp_name'], $rutaArchivo)) {
-                $rutasGuardadas[] = $rutaArchivo;
+                $rutasGuardadas[] = str_replace('../', '', $rutaArchivo);
             } else {
                 http_response_code(500);
                 echo json_encode(['error' => 'Error al mover el archivo: ' . $nombreArchivo]);
@@ -47,12 +47,13 @@ class CargueArchivosAuxiliosController {
             }
         }
 
+
+        $rutasComoJson = json_encode($rutasGuardadas);
+
+
         $query = $db->prepare("INSERT INTO adjuntos_auxilios (id_solicitud, ruta_archivo) VALUES (?, ?)");
-        foreach ($rutasGuardadas as $ruta) {
-            $rutaRelativa = str_replace('../', '', $ruta);
-            $query->bind_param("is", $idSolicitud, $rutaRelativa);
-            $query->execute();
-        }
+        $query->bind_param("is", $idSolicitud, $rutasComoJson);
+        $query->execute();
 
         $query->close();
         $db->close();
@@ -63,4 +64,3 @@ class CargueArchivosAuxiliosController {
         ]);
     }
 }
-?>

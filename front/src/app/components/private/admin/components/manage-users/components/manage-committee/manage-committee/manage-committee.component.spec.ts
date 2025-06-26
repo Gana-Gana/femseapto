@@ -1,18 +1,18 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SocialOversightComponent } from './social-oversight.component';
+import { ManageCommitteeComponent } from './manage-committee.component';
 
-describe('SocialOversightComponent', () => {
-  let component: SocialOversightComponent;
-  let fixture: ComponentFixture<SocialOversightComponent>;
+describe('ManageCommitteeComponent', () => {
+  let component: ManageCommitteeComponent;
+  let fixture: ComponentFixture<ManageCommitteeComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [SocialOversightComponent]
+      imports: [ManageCommitteeComponent]
     })
     .compileComponents();
     
-    fixture = TestBed.createComponent(SocialOversightComponent);
+    fixture = TestBed.createComponent(ManageCommitteeComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

@@ -1,3 +1,4 @@
+<td *ngIf="userRole !== 4 && userRole === 5">
 <button class="btn btn-primary btn-sm custom-button" (click)="onGenerateClick()" [disabled]="isLoading">
   <span *ngIf="!isLoading">Generar</span>
   <span *ngIf="isLoading" class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>

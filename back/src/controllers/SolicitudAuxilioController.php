@@ -41,7 +41,28 @@ class SolicitudAuxilioController {
         $solicitud->idTipoAuxilio = $datos['idTipoAuxilio'] ?? $solicitud->idTipoAuxilio;
         $solicitud->descripcion = $datos['descripcion'] ?? $solicitud->descripcion;
         $solicitud->fechaSolicitud = $datos['fechaSolicitud'] ?? date('Y-m-d');
-        $solicitud->adjuntosAuxilio = $datos['adjuntosAuxilio'] ?? null;
+        if (isset($datos['adjuntosAuxilio'])) {
+            $solicitud->adjuntosAuxilio = $datos['adjuntosAuxilio'];
+        }
+
+        $solicitud->guardar();
+
+        return true;
+    }
+    /**
+     * Actualiza estado y observaciones de usuario ya existente.
+     * @param int $id ID de la solicitud de auxilio.
+     * @param array $datos Datos nuevos.
+     * @return bool True si fue exitosa, false si falló o no existe.
+     */
+    public function actualizarEstadoYObservaciones($id, $datos) {
+    $solicitud = SolicitudAuxilio::obtenerPorId($id);
+        if (!$solicitud) {
+            return false;
+        }
+
+        $solicitud->estado = $datos['estado'] ?? $solicitud->estado;
+        $solicitud->observaciones = $datos['observaciones'] ?? $solicitud->observaciones;
 
         $solicitud->guardar();
 

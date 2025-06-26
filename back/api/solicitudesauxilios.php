@@ -1,8 +1,7 @@
 <?php
-
+require_once '../config/cors.php';
 require_once '../src/controllers/SolicitudAuxilioController.php';
 require_once '../auth/verifyToken.php';
-require_once '../config/cors.php';
 
 $key = $_ENV['JWT_SECRET_KEY'];
 $token = $_COOKIE['auth_token'] ?? '';
@@ -35,53 +34,50 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (isset($_FILES['adjuntosAuxilio'])) {
-            $fileNames   = (array) $_FILES['adjuntosAuxilio']['name'];
-    $fileTmp     = (array) $_FILES['adjuntosAuxilio']['tmp_name'];
-    $fileErrors  = (array) $_FILES['adjuntosAuxilio']['error'];
+        $fileNames   = (array) $_FILES['adjuntosAuxilio']['name'];
+        $fileTmp     = (array) $_FILES['adjuntosAuxilio']['tmp_name'];
+        $fileErrors  = (array) $_FILES['adjuntosAuxilio']['error'];
 
-    $rutasGuardadas = [];
-error_log(print_r($_FILES['adjuntosAuxilio'], true));
-    foreach ($fileNames as $idx => $originalFileName) {
-        // Saltamos ficheros con error
-        if ($fileErrors[$idx] !== UPLOAD_ERR_OK) {
-            continue;
+        $rutasGuardadas = [];
+        error_log(print_r($_FILES['adjuntosAuxilio'], true));
+
+        foreach ($fileNames as $idx => $originalFileName) {
+            if ($fileErrors[$idx] !== UPLOAD_ERR_OK) {
+                continue;
+            }
+
+            $fileExtension = pathinfo($originalFileName, PATHINFO_EXTENSION);
+            $newFileName   = sprintf(
+                '%s_%s_%d.%ñs',
+                $data['idUsuario'],
+                $idNuevo,
+                $idx + 1,
+                $fileExtension
+            );
+
+            $destPath = $uploadFileDir . $newFileName;
+
+            if (move_uploaded_file($fileTmp[$idx], $destPath)) {
+                $rutasGuardadas[] = 'uploads/documentsAllowances/' . $newFileName;
+            }
         }
 
-        $fileExtension = pathinfo($originalFileName, PATHINFO_EXTENSION);
-        // Ej.: 2699_15_1.pdf, 2699_15_2.png…
-        $newFileName   = sprintf(
-            '%s_%s_%d.%s',
-            $data['idUsuario'],
-            $idNuevo,
-            $idx + 1,
-            $fileExtension
-        );
-
-        $destPath = $uploadFileDir . $newFileName;
-
-        if (move_uploaded_file($fileTmp[$idx], $destPath)) {
-            $rutasGuardadas[] = 'uploads/documentsAllowances/' . $newFileName;
+        if (!$rutasGuardadas) {
+            http_response_code(400);
+            echo json_encode(['message' => 'No se pudo mover ningún archivo']);
+            exit();
         }
-    }
 
-    if (!$rutasGuardadas) {           // si ningún archivo se movió
-        http_response_code(400);
-        echo json_encode(['message' => 'No se pudo mover ningún archivo']);
-        exit();
-    }
+        $data['adjuntosAuxilio'] = $rutasGuardadas;
 
-    // Pasamos **array** de rutas al controlador
-    $data['adjuntosAuxilio'] = $rutasGuardadas;
-
-            if ($controlador->actualizar($idNuevo, $data)) {
-                http_response_code(201);
-                echo json_encode([
-            'id'      => $idNuevo,
-            'message' => 'Solicitud creada con éxito y archivos guardados',
-            'rutas'   => $rutasGuardadas,
-            'files'  => $_FILES['adjuntosAuxilio']
-        ]);
-            
+        if ($controlador->actualizar($idNuevo, $data)) {
+            http_response_code(201);
+            echo json_encode([
+                'id'      => $idNuevo,
+                'message' => 'Solicitud creada con éxito y archivos guardados',
+                'rutas'   => $rutasGuardadas,
+                'files'   => $_FILES['adjuntosAuxilio']
+            ]);
         } else {
             http_response_code(500);
             echo json_encode(['message' => 'Error al mover el archivo PDF']);
@@ -89,14 +85,27 @@ error_log(print_r($_FILES['adjuntosAuxilio'], true));
         }
     } else {
         http_response_code(400);
-        echo json_encode(['message' => 'No se subió ningún archivo o hubo un error en la subida', 'hola' => $_FILES]);
+        echo json_encode(['message' => 'No se subió ningún archivo o hubo un error en la subida']);
         exit();
     }
 } elseif ($_SERVER['REQUEST_METHOD'] === 'PUT') {
-    $datos = json_decode(file_get_contents("php://input"), true);
+   $datos = json_decode(file_get_contents("php://input"), true);
+
+    if (!isset($datos['id'])) {
+        http_response_code(400);
+        echo json_encode(['message' => 'ID no proporcionado']);
+        exit();
+    }
+
     $idExistente = $datos['id'];
+
     $actualizacionExitosa = $controlador->actualizar($idExistente, $datos);
-    echo json_encode(['success' => $actualizacionExitosa]);
+
+    $actualizado = $controlador->actualizarEstadoYObservaciones($idExistente, $datos);
+
+    echo json_encode([
+        'success' => $actualizacionExitosa && $actualizado
+    ]);
 } elseif ($_SERVER['REQUEST_METHOD'] === 'GET') {
     if (isset($_GET['id']) && isset($_GET['download']) && $_GET['download'] === 'pdf') {
         $id = $_GET['id'];
@@ -126,16 +135,19 @@ error_log(print_r($_FILES['adjuntosAuxilio'], true));
             http_response_code(404);
             echo json_encode(['message' => 'Solicitud no encontrada.']);
         }
+
     } elseif (isset($_GET['id'])) {
         $id = $_GET['id'];
         $resp = $controlador->obtenerPorId($id);
         header('Content-Type: application/json');
         echo json_encode($resp);
+
     } elseif (isset($_GET['idUsuario'])) {
         $idUsuario = $_GET['idUsuario'];
         $resp = $controlador->obtenerPorIdUsuario($idUsuario);
         header('Content-Type: application/json');
         echo json_encode($resp);
+
     } elseif (isset($_GET['startDate']) && isset($_GET['endDate'])) {
         $startDate = $_GET['startDate'];
         $endDate = $_GET['endDate'];
@@ -145,6 +157,7 @@ error_log(print_r($_FILES['adjuntosAuxilio'], true));
         $resp = $controlador->obtenerPorRangoDeFechas($startDate, $endDate);
         header('Content-Type: application/json');
         echo json_encode($resp);
+
     } else {
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
         $size = isset($_GET['size']) ? (int)$_GET['size'] : 10;
@@ -155,6 +168,7 @@ error_log(print_r($_FILES['adjuntosAuxilio'], true));
         header('Content-Type: application/json');
         echo json_encode($resp);
     }
+
 } else {
     http_response_code(405);
     echo json_encode(array("message" => "Método no permitido."));

@@ -58,6 +58,12 @@ export class RequestAllowanceService {
     });
   }
 
+  updateStatusAndComment(payload: { id: number; estado: number; observaciones: string }) {
+    return this.http.put<any[]>(`${this.apiUrl}/solicitudesauxilios.php?action=estado`, payload, 
+      {withCredentials: true}
+    );
+  }
+
   async downloadAllowanceRequestPdf(
     idSolicitudAuxilio: number,
     numeroDocumento: number

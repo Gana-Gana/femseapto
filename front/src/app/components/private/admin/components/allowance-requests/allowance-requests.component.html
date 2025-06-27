@@ -55,7 +55,7 @@
           <th style="width: 15%">Estado</th>
           <th style="width: 15%">Observaciones</th>
           <th style="width: 15%">Adjuntos</th>
-          <th *ngIf="userRole !== 1" style="width: 15%">Acciones</th>
+          <th *ngIf="userRole !== 1 && userRole !== 4" style="width: 15%">Acciones</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-allowanceRequest let-i="rowIndex">

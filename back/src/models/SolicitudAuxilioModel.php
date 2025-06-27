@@ -12,22 +12,22 @@ class SolicitudAuxilio{
     public $adjuntosAuxilio = [];
 
 
-    public function __construct($id = null, $idUsuario = null, $idTipoAuxilio = null, $descripcion = null, $fechaSolicitud = null, $estado = null, $observaciones = null, $adjuntosAuxilio = []) {
+    public function __construct($id = null, $idUsuario = null, $idTipoAuxilio = null, $descripcion = null, $fechaSolicitud = null, $adjuntosAuxilio = []) {
         
         $this->id = $id;
         $this->idUsuario = $idUsuario;
         $this->idTipoAuxilio = $idTipoAuxilio;
         $this->descripcion = $descripcion;
         $this->fechaSolicitud = $fechaSolicitud;
-        $this->estado = $estado;
-        $this->observaciones = $observaciones;
+        null;
+        null;
         $this->adjuntosAuxilio = $adjuntosAuxilio;
     }
 
     public function guardar() {
         $db = getDB();
         if ($this->id === null) {
-            $query = $db->prepare("INSERT INTO solicitudes_auxilios (id_usuario, id_tipo_auxilio, descripcion) VALUES (?, ?, ?, ?, ?)");
+            $query = $db->prepare("INSERT INTO solicitudes_auxilios (id_usuario, id_tipo_auxilio, descripcion) VALUES (?, ?, ?)");
             $query->bind_param("iis", $this->idUsuario, $this->idTipoAuxilio, $this->descripcion);
             $query->execute();
             $this->id = $query->insert_id;

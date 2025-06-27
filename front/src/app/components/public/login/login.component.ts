@@ -56,7 +56,7 @@ export class LoginComponent {
               this.router.navigate(['/auth/social-oversight']);
             } else if (rol === 5) {
               this.router.navigate(['/auth/committee']);
-            }else {
+            } else if (rol === 2) {
               this.router.navigate(['/auth/user']);
             }
           }

@@ -78,7 +78,7 @@
             }}
           </td>
           <td>
-            <span *ngIf="allowanceRequest.observaciones">{{ allowanceRequest.observaciones }}</span>
+            <span>{{ allowanceRequest.observaciones || 'Sin observaciones' }}</span>
           </td>
           <td>
             <ul *ngIf="allowanceRequest.adjuntos_auxilio?.length > 0; else noAdjuntos">

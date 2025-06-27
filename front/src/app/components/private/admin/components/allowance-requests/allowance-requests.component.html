@@ -55,8 +55,8 @@
           <th style="width: 15%">Fecha de Solicitud</th>
           <th style="width: 15%">Estado</th>
           <th style="width: 15%">Observaciones</th>
-          <th style="width: 20%">Adjuntos</th>
-          <th *ngIf="userRole === 5" style="text-align: center;">Acciones</th>
+          <th style="width: 15%">Adjuntos</th>
+          <th style="width: 15%">Acciones</th>
         </tr>
       </ng-template>
 
@@ -80,39 +80,24 @@
           <td>
             <span>{{ allowanceRequest.observaciones || 'Sin observaciones' }}</span>
           </td>
-          <td>
-            <ul *ngIf="allowanceRequest.adjuntos_auxilio?.length > 0; else noAdjuntos">
-              <li *ngFor="let archivo of allowanceRequest.adjuntos_auxilio">
-                <a
-                  [href]="'http://localhost/femseapto/uploads/' + archivo"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="text-primary"
-                >
-                  {{ archivo.split('/').pop() }}
-                </a>
-              </li>
-            </ul>
-            <ng-template #noAdjuntos>
-              <span class="text-muted">Sin adjuntos</span>
-            </ng-template>
-          </td>
-          <td *ngIf="userRole === 5">
+          <td class="flex gap-2">
             <button
               pButton
-              icon="pi pi-pencil"
-              class="p-button-sm p-button-rounded p-button-warning"
-              (click)="openEditModal(allowanceRequest)"
-              label="Gestionar"
+              icon="pi pi-paperclip"
+              class="p-button-rounded p-button-text p-button-sm"
+              title="Ver Adjuntos"
+              (click)="OpenModalAttachments(allowanceRequest.adjuntos_auxilio)"
             ></button>
           </td>
-        </tr>
-      </ng-template>
-      <ng-template pTemplate="emptymessage">
-        <tr>
-          <td colspan="7">No se encontraron solicitudes de auxilio.</td>
-          <td [attr.colspan]="userRole === 5 ? 7 : 8">
-            No se encontraron solicitudes de auxilio.
+          <td>
+            <button
+              *ngIf="userRole === 5"
+              pButton
+              icon="pi pi-pencil"
+              class="p-button-rounded p-button-text p-button-sm"
+              title="Gestionar"
+              (click)="openEditModal(allowanceRequest)"
+            ></button>
           </td>
         </tr>
       </ng-template>
@@ -183,6 +168,22 @@
         ></button>
       </div>
     </p-dialog>
-
+    <p-dialog header="Archivos Adjuntos" [(visible)]="mostrarModal" [modal]="true" [style]="{ width: '40vw' }">
+      <ul class="space-y-2">
+        <li *ngFor="let archivo of adjuntosSeleccionados" class="flex items-center gap-10 justify-between bg-gray-50 p-3 rounded-lg border border-gray-200 hover:shadow">
+          <span>{{ archivo.split('/').pop() }}</span>
+          <a
+            [href]="'http://localhost/femseapto/back/' + archivo"
+            target="_blank"
+            rel="noopener noreferrer"
+            pButton
+            type="button"
+            icon="pi pi-eye"
+            class="p-button-text p-button-sm"
+            title="Ver en nueva pestaña"
+          ></a>
+        </li>
+      </ul>
+    </p-dialog>
   </div>
 </div>

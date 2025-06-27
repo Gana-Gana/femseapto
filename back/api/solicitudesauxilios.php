@@ -169,6 +169,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         header('Content-Type: application/json');
         echo json_encode($resp);
     }
+    
+    } elseif (isset($_GET['file']) && $_GET['action'] === 'view') {
+    $archivo = basename($_GET['file']);
+    $ruta = realpath(__DIR__ . '/../uploads/documentsAllowances/' . $archivo);
+    $directorioPermitido = realpath(__DIR__ . '/../uploads/documentsAllowances');
+
+    if (!$ruta || strpos($ruta, $directorioPermitido) !== 0 || !file_exists($ruta)) {
+        http_response_code(404);
+        echo "Archivo no encontrado o acceso no permitido.";
+        exit();
+    }
+
+    $mime = mime_content_type($ruta);
+    header('Content-Type: ' . $mime);
+    header('Content-Disposition: inline; filename="' . $archivo . '"');
+    header('Content-Length: ' . filesize($ruta));
+    readfile($ruta);
+    exit();
+
 
 } else {
     http_response_code(405);

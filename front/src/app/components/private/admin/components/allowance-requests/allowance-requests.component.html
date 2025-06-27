@@ -30,7 +30,6 @@
         </div>
       </ng-template>
     </p-toolbar>
-
     <p-table #dt2
       [value]="allowanceRequests"
       dataKey="id"
@@ -56,10 +55,9 @@
           <th style="width: 15%">Estado</th>
           <th style="width: 15%">Observaciones</th>
           <th style="width: 15%">Adjuntos</th>
-          <th style="width: 15%">Acciones</th>
+          <th *ngIf="userRole !== 1" style="width: 15%">Acciones</th>
         </tr>
       </ng-template>
-
       <ng-template pTemplate="body" let-allowanceRequest let-i="rowIndex">
         <tr>
           <td>{{ i + 1 }}</td>
@@ -101,6 +99,13 @@
           </td>
         </tr>
       </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="10" class="text-center text-gray-500">
+            No hay solicitudes de auxilio.
+          </td>
+        </tr>
+      </ng-template>
     </p-table>
     <p-dialog
       header="Gestionar Solicitud"
@@ -123,7 +128,6 @@
             class="w-full"
           ></p-dropdown>
         </div>
-
         <div class="field mb-3 p-fluid">
           <label for="observaciones" class="font-semibold">Observación</label>
           <textarea
@@ -135,25 +139,24 @@
             placeholder="Escriba una observación..."
           ></textarea>
         </div>
-      
-        <div class= "flex">
+        <div class="w-full flex justify-end mt-4 px-2">
           <button
             pButton
             label="Guardar"
             icon="pi pi-check"
-            class="p-button-secondary p-button-sm p-button-rounded"
+            class="p-button-secondary p-button-sm p-button-rounded justify-center"
             (click)="saveStatusChanges()"
           ></button>
           <button
             pButton
             label="Cancelar"
             icon="pi pi-times"
-            class="p-button-danger p-button-sm p-button-rounded"
+            class="p-button-danger p-button-sm p-button-rounded justify-center"
+            style="margin-left: 27%"
             (click)="closeModal()"
           ></button>
         </div>
       </div>
-
       <div *ngIf="successfullyManaged" class="text-center py-4">
         <i class="pi pi-check-circle text-green-500" style="font-size: 2rem;"></i>
         <p class="text-green-700 text-lg font-medium mt-2">
@@ -168,9 +171,9 @@
         ></button>
       </div>
     </p-dialog>
-    <p-dialog header="Archivos Adjuntos" [(visible)]="mostrarModal" [modal]="true" [style]="{ width: '40vw' }">
+    <p-dialog header="Archivos Adjuntos" [(visible)]="mostrarModal" [modal]="true" [style]="{ width: '25vw' }">
       <ul class="space-y-2">
-        <li *ngFor="let archivo of adjuntosSeleccionados" class="flex items-center gap-10 justify-between bg-gray-50 p-3 rounded-lg border border-gray-200 hover:shadow">
+        <li *ngFor="let archivo of adjuntosSeleccionados" class="flex items-center gap-2 justify-between bg-gray-50 p-3 rounded-lg  hover:shadow">
           <span>{{ archivo.split('/').pop() }}</span>
           <a
             [href]="'http://localhost/femseapto/back/' + archivo"

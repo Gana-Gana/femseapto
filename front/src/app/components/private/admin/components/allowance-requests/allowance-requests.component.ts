@@ -30,7 +30,6 @@ import { DialogModule } from 'primeng/dialog';
     CommonModule,
     ReactiveFormsModule,
     FormsModule,
-    GenerateAllowanceRequestComponent,
     AllowanceReportComponent,
     TableModule,
     TagModule,

@@ -48,7 +48,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $fileExtension = pathinfo($originalFileName, PATHINFO_EXTENSION);
             $newFileName   = sprintf(
-                '%s_%s_%d.%ñs',
+                '%s_%s_%d.%s',
                 $data['idUsuario'],
                 $idNuevo,
                 $idx + 1,

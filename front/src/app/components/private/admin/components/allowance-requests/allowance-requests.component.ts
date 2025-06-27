@@ -249,4 +249,28 @@ export class AllowanceRequestsComponent implements OnInit {
     this.commentText = '';
     this.successfullyManaged = null;
   }
+
+  mostrarModal: boolean = false;
+  adjuntosSeleccionados: string[] = [];
+
+  OpenModalAttachments(adjuntos: string[]) {
+    this.adjuntosSeleccionados = adjuntos;
+    this.mostrarModal = true;
+  }
+
+  SeeAttachments(archivo: string) {
+    const url = `http://localhost/femseapto/uploads/${archivo}`;
+    window.open(url, '_blank');
+  }
+
+  DownloadAttachments(archivo: string) {
+    const url = `http://localhost/femseapto/uploads/${archivo}`;
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = archivo.split('/').pop() || 'archivo';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+
 }

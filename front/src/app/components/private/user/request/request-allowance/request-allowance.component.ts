@@ -30,6 +30,32 @@ export class RequestAllowanceComponent implements OnInit {
   pdfFiles: File[] = [];
   isSubmitting: boolean = false;
 
+  documentRequirements: { [key: number]: string[] } = {
+    1: ['Fórmula médica', 'Registro Civil de Nacimiento'],
+    2: ['Fórmula médica', 'Factura'],
+    3: ['Fórmula médica', 'Factura'],
+    4: ['Factura de medicamentos', 'Recibo de pago', 'Informe médico']
+  };
+
+  additionalFiles: { label: string; file?: File | null }[] = [];
+
+
+  onAdditionalFileChange(event: Event, index: number): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const file = input.files[0];
+      if (file.type === 'application/pdf') {
+        this.additionalFiles[index].file = file;
+      } else {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Archivo no válido',
+          detail: 'Solo se permiten archivos en formato PDF'
+        });
+        input.value = '';
+      }
+    }
+  }
   constructor(
     private fb: FormBuilder,
     private allowanceRequestService: RequestAllowanceService,
@@ -37,7 +63,7 @@ export class RequestAllowanceComponent implements OnInit {
     private messageService: MessageService,
     private router: Router,
     private allowanceTypeService: AllowanceTypeService,
-    private naturalpersonService: NaturalpersonService  
+    private naturalpersonService: NaturalpersonService
   ) {
     this.allowanceForm = this.fb.group({
       idTipoAuxilio: ['', Validators.required],
@@ -63,60 +89,58 @@ export class RequestAllowanceComponent implements OnInit {
     const token = this.loginService.getTokenClaims();
 
     if (token) {
-        let allValid = true;
+      let allValid = true;
 
-        this.naturalpersonService.validate(token.userId).subscribe(response => {
-            if (!response) {
-                this.displayMessageNatPerson = 'Por favor, registre la información general';
-                this.messageService.add({ severity: 'warn', summary: 'Aviso', detail: this.displayMessageNatPerson });
-                allValid = false;
-            }
-            this.checkValidationComplete(allValid);
-        });
-    }   
-}
-
-    checkValidationComplete(allValid: boolean): void {
-        this.isAdditionalDisabled = !allValid;
-    }
-
-onFileChange(event: Event): void {
-  const input = event.target as HTMLInputElement;
-  if (input.files && input.files.length > 0) {
-    const selectedFiles = Array.from(input.files);
-    const validFiles = selectedFiles.filter(file => file.type === 'application/pdf');
-
-    if (validFiles.length !== selectedFiles.length) {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Archivos no válidos',
-        detail: 'Algunos archivos no son PDF y fueron descartados'
+      this.naturalpersonService.validate(token.userId).subscribe(response => {
+        if (!response) {
+          this.displayMessageNatPerson = 'Por favor, registre la información general';
+          this.messageService.add({ severity: 'warn', summary: 'Aviso', detail: this.displayMessageNatPerson });
+          allValid = false;
+        }
+        this.checkValidationComplete(allValid);
       });
-    }
-
-    this.pdfFiles = validFiles;
-
-    if (this.pdfFiles.length > 0) {
-      this.allowanceForm.patchValue({ adjuntosAuxilio: this.pdfFiles });
-      this.allowanceForm.get('adjuntosAuxilio')?.updateValueAndValidity();
-    } else {
-      this.messageService.add({
-        severity: 'error',
-        summary: 'Error',
-        detail: 'Debe subir al menos un archivo PDF válido'
-      });
-      input.value = '';
     }
   }
-}
 
+  checkValidationComplete(allValid: boolean): void {
+    this.isAdditionalDisabled = !allValid;
+  }
 
+  onFileChange(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    if (input.files && input.files.length > 0) {
+      const selectedFiles = Array.from(input.files);
+      const validFiles = selectedFiles.filter(file => file.type === 'application/pdf');
+
+      if (validFiles.length !== selectedFiles.length) {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Archivos no válidos',
+          detail: 'Algunos archivos no son PDF y fueron descartados'
+        });
+      }
+
+      this.pdfFiles = validFiles;
+
+      if (this.pdfFiles.length > 0) {
+        this.allowanceForm.patchValue({ adjuntosAuxilio: this.pdfFiles });
+        this.allowanceForm.get('adjuntosAuxilio')?.updateValueAndValidity();
+      } else {
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: 'Debe subir al menos un archivo PDF válido'
+        });
+        input.value = '';
+      }
+    }
+  }
   onSubmit(): void {
     if (this.allowanceForm.valid) {
       this.isSubmitting = true;
       const token = this.loginService.getTokenClaims();
 
-      if(token) {
+      if (token) {
         const userId = token.userId;
         const formData = new FormData();
 
@@ -127,6 +151,22 @@ onFileChange(event: Event): void {
           this.pdfFiles.forEach(file => {
             formData.append('adjuntosAuxilio[]', file, file.name);
           });
+
+          
+          this.additionalFiles.forEach((doc) => {
+            if (doc.file) {
+              formData.append('adjuntosAuxilio[]', doc.file, doc.file.name);
+            }
+          });
+
+
+
+
+
+
+
+
+
         } else {
           this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Debe subir al menos un archivo' });
           this.isSubmitting = false;
@@ -149,5 +189,19 @@ onFileChange(event: Event): void {
       }
     }
   }
-  
+
+
+  onAllowanceTypeChange(): void {
+    const selectedId = +this.allowanceForm.get('idTipoAuxilio')?.value;
+    this.additionalFiles = [];
+
+    if (this.documentRequirements[selectedId]) {
+      this.additionalFiles = this.documentRequirements[selectedId].map(label => ({
+        label,
+        file: null
+      }));
+    }
+  }
+
+
 }

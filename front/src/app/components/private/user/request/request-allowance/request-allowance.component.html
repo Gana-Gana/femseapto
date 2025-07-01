@@ -1,4 +1,4 @@
-<div class="container-fluid px-3 px-md-4">
+<div class="container mt-4">
   <p-toast></p-toast>
   <app-info-request-allowance></app-info-request-allowance>
 
@@ -32,6 +32,7 @@
                 class="form-select"
                 formControlName="idTipoAuxilio"
                 id="idTipoAuxilio"
+                (change)="onAllowanceTypeChange()"
               >
                 <option value="" disabled selected>
                   Seleccione un tipo de auxilio
@@ -82,6 +83,22 @@
                 >
               </div>
             </div>
+
+
+            <div class="col-12" *ngFor="let file of additionalFiles; let i = index">
+  <label class="form-label fw-semibold">
+    Subir {{ file.label }} (PDF)
+  </label>
+  <input
+    type="file"
+    class="form-control"
+    accept="application/pdf"
+    (change)="onAdditionalFileChange($event, i)"
+  />
+  <div class="form-text">
+    Archivo requerido para el auxilio seleccionado
+  </div>
+</div>
 
             <div class="col-12 mt-4">
               <div class="d-grid gap-2 d-md-flex justify-content-md-end">

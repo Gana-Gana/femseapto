@@ -1,81 +1,116 @@
 <div class="container-fluid px-3 px-md-4">
   <p-toast></p-toast>
   <app-info-request-allowance></app-info-request-allowance>
-  
+
   <div class="row">
-  <div class="col-12">
+    <div class="col-12">
       <h5 class="mt-4 mb-3">Solicitud de Auxilio</h5>
-      
-      <div class="alert alert-warning" role="alert" *ngIf="displayMessageNatPerson">
-        <strong>{{ displayMessageNatPerson }}</strong>. De no hacerlo, no podrá completar la solicitud de auxilio, ya que esta información es fundamental para el estudio de su solicitud.
+
+      <div
+        class="alert alert-warning"
+        role="alert"
+        *ngIf="displayMessageNatPerson"
+      >
+        <strong>{{ displayMessageNatPerson }}</strong
+        >. De no hacerlo, no podrá completar la solicitud de auxilio, ya que
+        esta información es fundamental para el estudio de su solicitud.
       </div>
-      
+
       <div class="card shadow-sm mb-5">
         <div class="card-body p-4">
-          <form class="row g-4" [formGroup]="allowanceForm" (ngSubmit)="onSubmit()" [attr.disabled]="isAdditionalDisabled ? true : null">
-            
+          <form
+            class="row g-4"
+            [formGroup]="allowanceForm"
+            (ngSubmit)="onSubmit()"
+            [attr.disabled]="isAdditionalDisabled ? true : null"
+          >
             <div class="col-12">
-              <label for="idTipoAuxilio" class="form-label fw-semibold">Auxilios Disponibles</label>
-              <select class="form-select" formControlName="idTipoAuxilio" id="idTipoAuxilio">
-                <option value="" disabled selected>Seleccione un tipo de auxilio</option>
+              <label for="idTipoAuxilio" class="form-label fw-semibold"
+                >Auxilios Disponibles</label
+              >
+              <select
+                class="form-select"
+                formControlName="idTipoAuxilio"
+                id="idTipoAuxilio"
+              >
+                <option value="" disabled selected>
+                  Seleccione un tipo de auxilio
+                </option>
                 <option *ngFor="let type of allowanceTypes" [value]="type.id">
                   {{ type.nombre }}
                 </option>
               </select>
             </div>
-            
-            <div class="col-12">
-              <label for="descripcion" class="form-label fw-semibold">Descripción de la solicitud</label>
-              <div class="form-floating">
-                <textarea 
-                  class="form-control" 
-                  placeholder="Indique los motivos por los cuales solicita el auxilio" 
-                  formControlName="descripcion" 
-                  id="descripcion" 
-                  style="height: 150px">
-                </textarea>
-                <label for="descripcion">Indique los motivos por los cuales solicita el auxilio</label>
-              </div>
+
+            <div class="mb-3">
+              <label for="descripcion" class="form-label fw-semibold">
+                Descripción de la solictud
+              </label>
+              <textarea
+                class="form-control"
+                placeholder="Indique los motivos por los cuales solicita el auxilio"
+                formControlName="descripcion"
+                id="descripcion"
+                style="height: 150px"
+              >
+              </textarea>
             </div>
 
             <div class="col-12">
-              <label for="pdfFile" class="form-label fw-semibold">Subir copia de documento de identidad en archivo PDF</label>
-              <input 
-                type="file" 
-                multiple 
-                (change)="onFileChange($event)" 
-                class="form-control" 
-                accept="application/pdf" 
+              <label for="pdfFile" class="form-label fw-semibold"
+                >Subir copia de documento de identidad en archivo PDF</label
+              >
+              <input
+                type="file"
+                multiple
+                (change)="onFileChange($event)"
+                class="form-control"
+                accept="application/pdf"
                 id="pdfFile"
               />
-              <div class="form-text">Puede seleccionar múltiples archivos PDF</div>
-              <div *ngIf="allowanceForm.controls['adjuntosAuxilio'].invalid && allowanceForm.controls['adjuntosAuxilio'].touched">
-                <small class="text-danger">La copia de documento de identidad es obligatoria</small>
+              <div class="form-text">
+                Puede seleccionar múltiples archivos PDF
+              </div>
+              <div
+                *ngIf="
+                  allowanceForm.controls['adjuntosAuxilio'].invalid &&
+                  allowanceForm.controls['adjuntosAuxilio'].touched
+                "
+              >
+                <small class="text-danger"
+                  >La copia de documento de identidad es obligatoria</small
+                >
               </div>
             </div>
-            
+
             <div class="col-12 mt-4">
               <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                 <button
                   type="submit"
                   class="btn btn-success px-3"
-                  [disabled]="allowanceForm.invalid || isAdditionalDisabled || isSubmitting"
+                  [disabled]="
+                    allowanceForm.invalid ||
+                    isAdditionalDisabled ||
+                    isSubmitting
+                  "
                 >
                   <span *ngIf="!isSubmitting">
                     <i class="bi bi-send me-2"></i>Enviar Solicitud
                   </span>
                   <span *ngIf="isSubmitting">
-                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    <span
+                      class="spinner-border spinner-border-sm me-2"
+                      role="status"
+                      aria-hidden="true"
+                    ></span>
                     Enviando...
                   </span>
                 </button>
               </div>
             </div>
-            
           </form>
         </div>
       </div>
     </div>
   </div>
 </div>
-

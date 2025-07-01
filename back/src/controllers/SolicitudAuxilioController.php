@@ -56,7 +56,7 @@ class SolicitudAuxilioController {
      * @return bool True si fue exitosa, false si falló o no existe.
      */
     public function actualizarEstadoYObservaciones($id, $datos) {
-    $solicitud = SolicitudAuxilio::obtenerPorId($id);
+        $solicitud = SolicitudAuxilio::obtenerPorId($id);
         if (!$solicitud) {
             return false;
         }
@@ -64,10 +64,11 @@ class SolicitudAuxilioController {
         $solicitud->estado = $datos['estado'] ?? $solicitud->estado;
         $solicitud->observaciones = $datos['observaciones'] ?? $solicitud->observaciones;
 
-        $solicitud->guardar();
+        $solicitud->actualizarEstadoYObservaciones();
 
         return true;
     }
+
 
     /**
      * Obtiene una solicitud por su ID.

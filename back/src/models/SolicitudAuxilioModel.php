@@ -36,7 +36,6 @@ class SolicitudAuxilio{
         } else {
             $query = $db->prepare("UPDATE solicitudes_auxilios SET id_tipo_auxilio = ?, descripcion = ?, fecha_solicitud = ?, estado = ?, observaciones = ? WHERE id = ?");
             $query->bind_param("issisi", $this->idTipoAuxilio, $this->descripcion, $this->fechaSolicitud, $this->estado, $this->observaciones, $this->id);
-            error_log("Actualizando solicitud $this->id con estado=$this->estado y observaciones=$this->observaciones");
             $query->execute();
             $query->close();
         }
@@ -50,6 +49,17 @@ class SolicitudAuxilio{
         $insertAdjunto->close();
     }
 }
+
+public function actualizarEstadoYObservaciones() {
+        $db = getDB();
+
+        $query = $db->prepare("UPDATE solicitudes_auxilios SET estado = ?, observaciones = ? WHERE id = ?");
+        $query->bind_param("isi", $this->estado, $this->observaciones, $this->id);
+        $query->execute();
+        $query->close();
+
+        $db->close();
+    }
 
 public static function obtenerPorId($id) {
     $db = getDB();
@@ -143,7 +153,7 @@ public static function obtenerPorId($id) {
                     id_usuario,
                     id_tipo_auxilio,
                     descripcion,
-                    CONVERT_TZ(fecha_solicitud, '+00:00', '-05:00') AS fecha_solicitud,
+                    fecha_solicitud,
                     estado,
                     observaciones
                 FROM solicitudes_auxilios";
@@ -190,7 +200,7 @@ public static function obtenerPorId($id) {
             sa.id_usuario,
             sa.id_tipo_auxilio,
             sa.descripcion,
-            CONVERT_TZ(sa.fecha_solicitud, '+00:00', '-05:00') AS fecha_solicitud,
+            fecha_solicitud,
             sa.estado,
             sa.observaciones,
             u.primer_nombre,

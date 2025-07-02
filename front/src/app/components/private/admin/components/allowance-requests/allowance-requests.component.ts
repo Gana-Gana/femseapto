@@ -31,6 +31,7 @@ import { DialogModule } from 'primeng/dialog';
     ReactiveFormsModule,
     FormsModule,
     AllowanceReportComponent,
+    GenerateAllowanceRequestComponent,
     TableModule,
     TagModule,
     IconFieldModule,
@@ -56,17 +57,6 @@ export class AllowanceRequestsComponent implements OnInit {
 
   ngOnInit(): void {
   const role = localStorage.getItem('userRole');
-  if (role) {
-    this.userRole = parseInt(role, 10);
-
-    if (this.userRole === 4) {
-      console.log('Usuario es Control Social');
-    }
-
-    if (this.userRole === 5) {
-      console.log('Usuario es Comité');
-    }
-  }
 
   this.loadAllowanceRequests();
 }

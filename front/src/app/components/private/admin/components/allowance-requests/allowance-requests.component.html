@@ -1,7 +1,7 @@
 <div class="container mt-5">
   <h1>Solicitudes de Auxilio</h1>
 
-  <app-allowance-report *ngIf="userRole !== 4 && userRole !== 5" />
+  <app-allowance-report *ngIf="userRole !== 4 && userRole !== 5"/>
 
   <div class="card">
     <p-toolbar styleClass="mb-1 gap-2">
@@ -55,7 +55,7 @@
           <th style="width: 15%">Estado</th>
           <th style="width: 15%">Observaciones</th>
           <th style="width: 15%">Adjuntos</th>
-          <th *ngIf="userRole !== 1 && userRole !== 4" style="width: 15%">Acciones</th>
+          <th *ngIf="userRole !== 4 && userRole !== 1" style="width: 15%">Acciones</th>
         </tr>
       </ng-template>
       <ng-template pTemplate="body" let-allowanceRequest let-i="rowIndex">
@@ -96,6 +96,12 @@
               title="Gestionar"
               (click)="openEditModal(allowanceRequest)"
             ></button>
+          </td>
+          <td *ngIf="userRole !== 4 && userRole !== 5">
+            <app-generate-allowance-request 
+              [userId]="allowanceRequest.idUsuario"
+              [idSolicitudAuxilio]="allowanceRequest.id">
+            </app-generate-allowance-request>
           </td>
         </tr>
       </ng-template>

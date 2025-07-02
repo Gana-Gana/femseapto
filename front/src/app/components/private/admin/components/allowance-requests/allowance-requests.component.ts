@@ -22,6 +22,9 @@ import { ToolbarModule } from 'primeng/toolbar';
 import { InputGroupAddonModule } from 'primeng/inputgroupaddon';
 import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
+import { ProgressSpinnerModule } from 'primeng/progressspinner';
+
+
 
 @Component({
   selector: 'app-allowance-requests',
@@ -44,7 +47,9 @@ import { DialogModule } from 'primeng/dialog';
     ToolbarModule,
     InputGroupAddonModule,
     ButtonModule,
-    DialogModule
+    DialogModule,
+    ProgressSpinnerModule
+    
   ],
   templateUrl: './allowance-requests.component.html',
   styleUrl: './allowance-requests.component.css',
@@ -210,6 +215,8 @@ export class AllowanceRequestsComponent implements OnInit {
   selectedStatus: any = null;
   commentText: string = '';
   successfullyManaged: boolean | null = null;
+  isSaving: boolean = false;
+
 
   openEditModal(request: any) {
     this.selectedRequest = request;
@@ -220,6 +227,7 @@ export class AllowanceRequestsComponent implements OnInit {
   }
 
   saveStatusChanges() {
+    this.isSaving = true; 
     const payload = {
       id: this.selectedRequest.id,
       estado: this.selectedStatus,
@@ -233,10 +241,13 @@ export class AllowanceRequestsComponent implements OnInit {
           this.allowanceRequests[index].estado = this.selectedStatus;
           this.allowanceRequests[index].observaciones = this.commentText;
         }
+        this.isSaving = false;
         this.successfullyManaged = true;
+        this.loadAllowanceRequests();
       },
       error: (error) => {
         console.error('Update error:', error);
+        this.isSaving = false;
         this.showEditModal = false;
       }
     });

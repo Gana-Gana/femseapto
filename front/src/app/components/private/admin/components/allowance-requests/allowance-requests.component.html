@@ -118,7 +118,7 @@
       [style]="{ width: '30vw' }"
       [closable]="false"
     >
-      <div *ngIf="!successfullyManaged">
+      <div *ngIf="!successfullyManaged && !isSaving">
         <div class="field mb-3 p-fluid">
           <label for="estado" class="font-semibold">Estado</label>
           <p-dropdown
@@ -161,7 +161,13 @@
           ></button>
         </div>
       </div>
-      <div *ngIf="successfullyManaged" class="text-center py-4">
+
+      <div *ngIf="isSaving" class="text-center py-5">
+    <p-progressSpinner styleClass="custom-spinner" strokeWidth="5"></p-progressSpinner>
+    <p class="mt-3 text-gray-700">Guardando cambios...</p>
+  </div>
+
+      <div *ngIf="successfullyManaged && !isSaving" class="text-center py-4">
         <i class="pi pi-check-circle text-green-500" style="font-size: 2rem;"></i>
         <p class="text-green-700 text-lg font-medium mt-2">
           Solicitud gestionada con éxito.

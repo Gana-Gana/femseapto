@@ -171,22 +171,75 @@
         ></button>
       </div>
     </p-dialog>
-    <p-dialog header="Archivos Adjuntos" [(visible)]="mostrarModal" [modal]="true" [style]="{ width: '25vw' }">
-      <ul class="space-y-2">
-        <li *ngFor="let archivo of adjuntosSeleccionados" class="flex items-center gap-2 justify-between bg-gray-50 p-3 rounded-lg  hover:shadow">
-          <span>{{ archivo.split('/').pop() }}</span>
-          <a
-            [href]="'http://localhost/femseapto/back/' + archivo"
-            target="_blank"
-            rel="noopener noreferrer"
+    <p-dialog
+      header="Archivos Adjuntos"
+      [(visible)]="mostrarModal"
+      [modal]="true"
+      [style]="{ width: '40vw', 'min-width': '300px' }"
+      [draggable]="false"
+      [resizable]="false"
+    >
+      <div class="attachments-container">
+        <div *ngIf="adjuntosSeleccionados.length === 0" class="text-center py-4">
+          <i class="pi pi-inbox" style="font-size: 3rem; color: #6c757d;"></i>
+          <p class="text-muted mt-2">No hay archivos adjuntos</p>
+        </div>
+
+        <div *ngIf="adjuntosSeleccionados.length > 0" class="files-grid">
+          <div
+            *ngFor="let archivo of adjuntosSeleccionados; let i = index"
+            class="file-item p-3 mb-3 border rounded-3 bg-light position-relative"
+            style="border: 2px solid #e9ecef; transition: all 0.3s ease;"
+            onmouseover="this.style.borderColor='#0d6efd'; this.style.boxShadow='0 4px 12px rgba(13, 110, 253, 0.15)'"
+            onmouseout="this.style.borderColor='#e9ecef'; this.style.boxShadow='none'"
+          >
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="file-info d-flex align-items-center flex-grow-1">
+                <div class="file-icon me-3">
+                  <i class="bi bi-file-earmark-pdf-fill text-danger" style="font-size: 2rem;"></i>
+                </div>
+                <div class="file-details">
+                  <h6 class="mb-1 fw-semibold text-dark">{{ archivo.split('/').pop() }}</h6>
+                </div>
+              </div>
+
+              <div class="file-actions">
+                <a
+                  [href]="'http://localhost/femseapto/back/' + archivo"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="btn btn-outline-primary btn-sm me-2"
+                  title="Ver archivo"
+                >
+                  <i class="bi bi-eye me-1"></i>Ver
+                </a>
+              </div>
+            </div>
+
+            <div class="file-preview mt-2">
+              <div class="progress" style="height: 4px;">
+                <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ng-template pTemplate="footer">
+        <div class="d-flex justify-content-between align-items-center">
+          <small class="text-muted">
+            <i class="bi bi-info-circle me-1"></i>
+            {{ adjuntosSeleccionados.length }} archivo(s) adjunto(s)
+          </small>
+          <button
             pButton
-            type="button"
-            icon="pi pi-eye"
-            class="p-button-text p-button-sm"
-            title="Ver en nueva pestaña"
-          ></a>
-        </li>
-      </ul>
+            label="Cerrar"
+            icon="pi pi-times"
+            class="p-button-secondary p-button-sm"
+            (click)="mostrarModal = false"
+          ></button>
+        </div>
+      </ng-template>
     </p-dialog>
   </div>
 </div>

@@ -59,6 +59,9 @@ export class AllowanceRequestsComponent implements OnInit {
   if (role) {
       this.userRole = parseInt(role, 10);
 
+      if (this.userRole === 1) {
+      }
+
       if (this.userRole === 4) {
       }
 

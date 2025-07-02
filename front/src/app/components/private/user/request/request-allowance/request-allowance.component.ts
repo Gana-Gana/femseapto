@@ -31,10 +31,12 @@ export class RequestAllowanceComponent implements OnInit {
   isSubmitting: boolean = false;
 
   documentRequirements: { [key: number]: string[] } = {
-    1: ['Fórmula médica', 'Registro Civil de Nacimiento'],
-    2: ['Fórmula médica', 'Factura'],
-    3: ['Fórmula médica', 'Factura'],
-    4: ['Factura de medicamentos', 'Recibo de pago', 'Informe médico']
+    1: ['Solicitud diligenciada', 'Registro Civil de Nacimiento (Copia autética)'],
+    2: ['Fórmula médica', 'Factura con requisitos legales'],
+    3: ['Solicitud escrita', 'soportes según tipo de calamidad'],
+    4: ['Documento médico del tratamiento', 'Facturas legales', 'Solicitud formal', 'Comprobante de pago'],
+    5: ['Promesa de compraventa', 'Recibo de pago notarial (Máx. 30 días)'],
+    6: ['Constancia de estudio o recibo de pago con sello', 'Presentación certificado de notas del periodo cursado'],
   };
 
   additionalFiles: { label: string; file?: File | null }[] = [];
@@ -158,14 +160,6 @@ export class RequestAllowanceComponent implements OnInit {
               formData.append('adjuntosAuxilio[]', doc.file, doc.file.name);
             }
           });
-
-
-
-
-
-
-
-
 
         } else {
           this.messageService.add({ severity: 'error', summary: 'Error', detail: 'Debe subir al menos un archivo' });

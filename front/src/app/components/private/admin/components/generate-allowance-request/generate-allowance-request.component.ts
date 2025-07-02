@@ -99,7 +99,6 @@ export class GenerateAllowanceRequestComponent implements OnInit {
         worksheet.getCell('A14').value = this.descripcion;             
 
         const tipo = this.idTipoAuxilio;
-        console.log('🔍 ID tipo auxilio:', tipo);
 
         switch (tipo) {
           case '1':

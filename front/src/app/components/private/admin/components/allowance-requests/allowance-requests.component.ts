@@ -54,12 +54,19 @@ export class AllowanceRequestsComponent implements OnInit {
   @ViewChild('dt2') dt2!: Table;
 
   userRole: number = 0;
-
   ngOnInit(): void {
   const role = localStorage.getItem('userRole');
+  if (role) {
+      this.userRole = parseInt(role, 10);
 
-  this.loadAllowanceRequests();
-}
+      if (this.userRole === 4) {
+      }
+
+      if (this.userRole === 5) {
+      }
+    }
+    this.loadAllowanceRequests();
+  }
 
 
   allowanceRequests: any[] = [];

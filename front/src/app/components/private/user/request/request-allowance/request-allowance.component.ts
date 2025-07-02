@@ -138,6 +138,10 @@ export class RequestAllowanceComponent implements OnInit {
     }
   }
   onSubmit(): void {
+
+    if (!this.validateAllDocuments()) {
+    return;
+  }
     if (this.allowanceForm.valid) {
       this.isSubmitting = true;
       const token = this.loginService.getTokenClaims();
@@ -196,6 +200,22 @@ export class RequestAllowanceComponent implements OnInit {
       }));
     }
   }
+
+  validateAllDocuments(): boolean {
+  if (this.additionalFiles.length > 0) {
+    const missingDocs = this.additionalFiles.filter(doc => !doc.file);
+    if (missingDocs.length > 0) {
+      this.messageService.add({
+        severity: 'error',
+        summary: 'Documentos requeridos',
+        detail: 'Todos los documentos adicionales son obligatorios.'
+      });
+      return false;
+    }
+  }
+  return true;
+}
+
 
 
 }

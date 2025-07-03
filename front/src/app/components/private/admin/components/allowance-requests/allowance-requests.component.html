@@ -149,6 +149,7 @@
             label="Guardar"
             icon="pi pi-check"
             class="p-button-secondary p-button-sm p-button-rounded justify-center"
+            [disabled]="isSaveDisabled()"
             (click)="saveStatusChanges()"
           ></button>
           <button

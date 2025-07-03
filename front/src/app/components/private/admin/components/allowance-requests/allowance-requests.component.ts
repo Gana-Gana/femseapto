@@ -284,4 +284,9 @@ export class AllowanceRequestsComponent implements OnInit {
     document.body.removeChild(link);
   }
 
+  isSaveDisabled(): boolean {
+  return this.selectedStatus === null || this.commentText.trim() === '';
+}
+
+
 }

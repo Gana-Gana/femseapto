@@ -9,6 +9,7 @@ import saveAs from 'file-saver';
 })
 export class RequestAllowanceService {
   private apiUrl: string = environment.apiUrl;
+  private authUrl: string = environment.authUrl;
 
   constructor(private http: HttpClient) {}
 
@@ -85,5 +86,9 @@ export class RequestAllowanceService {
     } catch (error) {
       console.error('Error al descargar el PDF:', error);
     }
+  }
+
+  previewUrl(file: string): string {
+    return `${this.authUrl}/${file}`;
   }
 }

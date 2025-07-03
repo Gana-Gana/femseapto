@@ -98,7 +98,6 @@ export class ManageCommitteeComponent {
       segundoNombre: [''],
       usuario: ['', Validators.required],
       id_rol: [5, Validators.required],
-      id_tipo_asociado: [3],
       activo: [true, Validators.required],
     });
 
@@ -168,13 +167,10 @@ export class ManageCommitteeComponent {
 
   changeState(id: number): void {
     const user = this.users.find((user) => user.id === id);
-    //console.log("id", id);
     if (user) {
       this.userService.changeState(id).subscribe({
         next: (response) => {
-          // Actualiza el estado del usuario en la lista
           user.activo = user.activo === 0 ? 1 : 0;
-          //console.log('Estado del usuario actualizado');
         },
         error: (err) => {
           console.error('Error al cambiar el estado del usuario', err);
@@ -185,10 +181,8 @@ export class ManageCommitteeComponent {
 
   editUser(id: number): void {
     const user = this.users.find((user) => user.id === id);
-    //console.log(user);
     if (user) {
       this.isEditMode = true;
-      //this.editUserForm.patchValue({ id_tipo_asociado: 3 });
       this.editUserForm.patchValue(user);
     }
   }
@@ -196,7 +190,7 @@ export class ManageCommitteeComponent {
   createUser(): void {
     this.isEditMode = false;
     this.formReset();
-    this.editUserForm.patchValue({ activo: 1, id_rol: 5, idTipoDocumento: '' }); // Establecer el estado activo como true por defecto
+    this.editUserForm.patchValue({ activo: 1, id_rol: 5, idTipoDocumento: '' });
   }
 
   openResetPasswordModal(userId: number) {
@@ -225,9 +219,12 @@ export class ManageCommitteeComponent {
   }
 
   submit(): void {
-    //console.log(this.editUserForm.value);
     if (this.editUserForm.valid) {
-      const userFormData = this.editUserForm.value;
+      const userFormData = {
+        ...this.editUserForm.value,
+        id_tipo_asociado: 3,
+      };
+
       if (this.isEditMode) {
         this.userService.update(userFormData).subscribe({
           next: () => {
@@ -249,14 +246,13 @@ export class ManageCommitteeComponent {
             this.messageService.add({
               severity: 'error',
               summary: 'Error',
-              detail: err.id.message,
+              detail: err?.error?.message || 'Error al actualizar',
             });
           },
         });
       } else {
         this.userService.create(userFormData).subscribe({
           next: () => {
-            //console.log(userFormData);
             this.users.push(userFormData);
             this.formReset();
             this.messageService.add({
@@ -270,7 +266,7 @@ export class ManageCommitteeComponent {
             this.messageService.add({
               severity: 'error',
               summary: 'Error',
-              detail: err.error.id.message,
+              detail: err?.error?.message || 'Error al crear el usuario',
             });
           },
         });

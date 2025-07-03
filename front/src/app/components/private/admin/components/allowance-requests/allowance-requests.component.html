@@ -216,15 +216,12 @@
               </div>
 
               <div class="file-actions">
-                <a
-                  [href]="'http://localhost/femseapto/back/' + archivo"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="btn btn-outline-primary btn-sm me-2"
-                  title="Ver archivo"
-                >
-                  <i class="bi bi-eye me-1"></i>Ver
-                </a>
+                <button
+                  pButton
+                  icon="pi pi-eye"
+                  class="p-button-text p-button-sm"
+                  (click)="seeAttachment(archivo)"
+                ></button>
               </div>
             </div>
 

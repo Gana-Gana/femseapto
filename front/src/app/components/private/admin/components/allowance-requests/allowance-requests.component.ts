@@ -24,8 +24,6 @@ import { ButtonModule } from 'primeng/button';
 import { DialogModule } from 'primeng/dialog';
 import { ProgressSpinnerModule } from 'primeng/progressspinner';
 
-
-
 @Component({
   selector: 'app-allowance-requests',
   standalone: true,
@@ -48,8 +46,7 @@ import { ProgressSpinnerModule } from 'primeng/progressspinner';
     InputGroupAddonModule,
     ButtonModule,
     DialogModule,
-    ProgressSpinnerModule
-    
+    ProgressSpinnerModule,
   ],
   templateUrl: './allowance-requests.component.html',
   styleUrl: './allowance-requests.component.css',
@@ -60,8 +57,8 @@ export class AllowanceRequestsComponent implements OnInit {
 
   userRole: number = 0;
   ngOnInit(): void {
-  const role = localStorage.getItem('userRole');
-  if (role) {
+    const role = localStorage.getItem('userRole');
+    if (role) {
       this.userRole = parseInt(role, 10);
 
       if (this.userRole === 1) {
@@ -75,7 +72,6 @@ export class AllowanceRequestsComponent implements OnInit {
     }
     this.loadAllowanceRequests();
   }
-
 
   allowanceRequests: any[] = [];
 
@@ -108,10 +104,10 @@ export class AllowanceRequestsComponent implements OnInit {
   }
 
   loadAllowanceRequests(
-  page: number = 1,
-  size: number = 10,
-  search: string = '',
-  date: string = ''
+    page: number = 1,
+    size: number = 10,
+    search: string = '',
+    date: string = ''
   ): void {
     this.loading = true;
     this.requestAllowanceService
@@ -140,7 +136,7 @@ export class AllowanceRequestsComponent implements OnInit {
         },
       });
   }
-  
+
   onSearch(): void {
     this.currentPage = 1;
     this.searchQuery = this.searchControl.value || '';
@@ -198,7 +194,7 @@ export class AllowanceRequestsComponent implements OnInit {
       alert(`Observación registrada.`);
     }
   }
-  
+
   viewAttachments(adjuntos: string[]): void {
     if (!adjuntos || adjuntos.length === 0) {
       alert('No hay documentos adjuntos.');
@@ -217,7 +213,6 @@ export class AllowanceRequestsComponent implements OnInit {
   successfullyManaged: boolean | null = null;
   isSaving: boolean = false;
 
-
   openEditModal(request: any) {
     this.selectedRequest = request;
     this.showEditModal = true;
@@ -227,16 +222,18 @@ export class AllowanceRequestsComponent implements OnInit {
   }
 
   saveStatusChanges() {
-    this.isSaving = true; 
+    this.isSaving = true;
     const payload = {
       id: this.selectedRequest.id,
       estado: this.selectedStatus,
-      observaciones: this.commentText
+      observaciones: this.commentText,
     };
 
     this.requestAllowanceService.updateStatusAndComment(payload).subscribe({
       next: () => {
-        const index = this.allowanceRequests.findIndex(r => r.id === this.selectedRequest.id);
+        const index = this.allowanceRequests.findIndex(
+          (r) => r.id === this.selectedRequest.id
+        );
         if (index !== -1) {
           this.allowanceRequests[index].estado = this.selectedStatus;
           this.allowanceRequests[index].observaciones = this.commentText;
@@ -249,7 +246,7 @@ export class AllowanceRequestsComponent implements OnInit {
         console.error('Update error:', error);
         this.isSaving = false;
         this.showEditModal = false;
-      }
+      },
     });
   }
 
@@ -269,24 +266,12 @@ export class AllowanceRequestsComponent implements OnInit {
     this.mostrarModal = true;
   }
 
-  SeeAttachments(archivo: string) {
-    const url = `http://localhost/femseapto/uploads/${archivo}`;
-    window.open(url, '_blank');
-  }
-
-  DownloadAttachments(archivo: string) {
-    const url = `http://localhost/femseapto/uploads/${archivo}`;
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = archivo.split('/').pop() || 'archivo';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  seeAttachment(path: string): void {
+    const url = this.requestAllowanceService.previewUrl(path);
+    window.open(url, '_blank', 'noopener');
   }
 
   isSaveDisabled(): boolean {
-  return this.selectedStatus === null || this.commentText.trim() === '';
-}
-
-
+    return this.selectedStatus === null || this.commentText.trim() === '';
+  }
 }

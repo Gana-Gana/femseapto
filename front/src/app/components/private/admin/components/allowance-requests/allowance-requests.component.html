@@ -115,7 +115,7 @@
       header="Gestionar Solicitud"
       [(visible)]="showEditModal"
       [modal]="true"
-      [style]="{ width: '30vw' }"
+      [style]="{ width: '30vw', 'min-width': '320px' }"
       [closable]="false"
     >
       <div *ngIf="!successfullyManaged && !isSaving">
@@ -143,12 +143,13 @@
             placeholder="Escriba una observación..."
           ></textarea>
         </div>
-        <div class="w-full flex justify-end mt-4 px-2">
+        <div class="d-flex align-items-center justify-content-between">
           <button
             pButton
             label="Guardar"
             icon="pi pi-check"
-            class="p-button-secondary p-button-sm p-button-rounded justify-center"
+            class="p-button-success p-button-sm p-button-rounded justify-center"
+            
             [disabled]="isSaveDisabled()"
             (click)="saveStatusChanges()"
           ></button>
@@ -157,7 +158,7 @@
             label="Cancelar"
             icon="pi pi-times"
             class="p-button-danger p-button-sm p-button-rounded justify-center"
-            style="margin-left: 27%"
+            
             (click)="closeModal()"
           ></button>
         </div>

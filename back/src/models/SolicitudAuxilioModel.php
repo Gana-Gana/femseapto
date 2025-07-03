@@ -69,7 +69,7 @@ public static function obtenerPorId($id) {
             id_usuario,
             id_tipo_auxilio,
             descripcion,
-            CONVERT_TZ(fecha_solicitud, '+00:00', '-05:00') AS fecha_solicitud,
+            fecha_solicitud,
                 estado,
                 observaciones
         FROM solicitudes_auxilios
@@ -110,7 +110,7 @@ public static function obtenerPorId($id) {
             id_usuario,
             id_tipo_auxilio,
             descripcion,
-            CONVERT_TZ(fecha_solicitud, '+00:00', '-05:00') AS fecha_solicitud,
+            fecha_solicitud,
                 estado,
                 observaciones
         FROM solicitudes_auxilios
@@ -200,7 +200,7 @@ public static function obtenerPorId($id) {
             sa.id_usuario,
             sa.id_tipo_auxilio,
             sa.descripcion,
-            fecha_solicitud,
+            sa.fecha_solicitud AS fecha_solicitud,
             sa.estado,
             sa.observaciones,
             u.primer_nombre,
@@ -237,7 +237,7 @@ public static function obtenerPorId($id) {
         }
         $fechaSQL = $fechaConvertida->format('Y-m-d');
 
-        $whereConditions[] = "DATE(CONVERT_TZ(sa.fecha_solicitud, '+00:00', '-05:00')) = ?";
+        $whereConditions[] = "DATE(sa.fecha_solicitud) = ?";
         $params[] = $fechaSQL;
         $types .= "s";
     }
@@ -342,7 +342,7 @@ public static function obtenerPorId($id) {
                 id_usuario,
                 id_tipo_auxilio,
                 descripcion,
-                CONVERT_TZ(fecha_solicitud, '+00:00', '-05:00') AS fecha_solicitud,
+                fecha_solicitud,
                 estado,
                 observaciones
             FROM solicitudes_auxilios

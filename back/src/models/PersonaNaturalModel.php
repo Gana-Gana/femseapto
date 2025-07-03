@@ -85,7 +85,7 @@ class PersonaNatural {
         $mesSaleVacaciones = '',
         $nombreEmergencia = '',
         $numeroCedulaEmergencia = '',
-        $numeroCelularEmergencia,
+        $numeroCelularEmergencia = '',
         $creadoEl = '',
         $actualizadoEl = '') {
         $this->id = $id;
@@ -217,8 +217,8 @@ class PersonaNatural {
                 nombre_emergencia,
                 numero_cedula_emergencia,
                 numero_celular_emergencia,
-                CONVERT_TZ(creado_el, '+00:00', '-05:00') AS creado_el,
-                CONVERT_TZ(actualizado_el, '+00:00', '-05:00') AS actualizado_el
+                creado_el,
+                actualizado_el
             FROM personas_naturales
             WHERE id = ?");
         $query->bind_param("i", $id);
@@ -362,8 +362,8 @@ class PersonaNatural {
                 nombre_emergencia,
                 numero_cedula_emergencia,
                 numero_celular_emergencia,
-                CONVERT_TZ(creado_el, '+00:00', '-05:00') AS creado_el,
-                CONVERT_TZ(actualizado_el, '+00:00', '-05:00') AS actualizado_el
+                creado_el,
+                actualizado_el
             FROM personas_naturales
             WHERE id_usuario = ?");
         $query->bind_param("i", $idUsuario);
@@ -506,8 +506,8 @@ class PersonaNatural {
                     nombre_emergencia,
                     numero_cedula_emergencia,
                     numero_celular_emergencia,
-                    CONVERT_TZ(creado_el, '+00:00', '-05:00') AS creado_el,
-                    CONVERT_TZ(actualizado_el, '+00:00', '-05:00') AS actualizado_el
+                    creado_el,
+                    actualizado_el
                 FROM personas_naturales";
         $result = $db->query($query);
         $personasNaturales = [];

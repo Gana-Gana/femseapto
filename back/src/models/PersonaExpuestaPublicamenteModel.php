@@ -83,8 +83,8 @@ class PersonaExpuestaPublicamente {
                 funcion_publico_extranjero,
                 fam_funcion_publico,
                 socio_funcion_publico,
-                CONVERT_TZ(creado_el, '+00:00', '-05:00') AS creado_el,
-                CONVERT_TZ(actualizado_el, '+00:00', '-05:00') AS actualizado_el
+                creado_el,
+                actualizado_el
             FROM personas_expuestas_publicamente
             WHERE id = ?");
         $query->bind_param("i", $id);
@@ -113,8 +113,8 @@ class PersonaExpuestaPublicamente {
                 funcion_publico_extranjero,
                 fam_funcion_publico,
                 socio_funcion_publico,
-                CONVERT_TZ(creado_el, '+00:00', '-05:00') AS creado_el,
-                CONVERT_TZ(actualizado_el, '+00:00', '-05:00') AS actualizado_el
+                creado_el,
+                actualizado_el
             FROM personas_expuestas_publicamente
             WHERE id_usuario = ?");
         $query->bind_param("i", $idUsuario);
@@ -142,8 +142,8 @@ class PersonaExpuestaPublicamente {
                     funcion_publico_extranjero,
                     fam_funcion_publico,
                     socio_funcion_publico,
-                    CONVERT_TZ(creado_el, '+00:00', '-05:00') AS creado_el,
-                    CONVERT_TZ(actualizado_el, '+00:00', '-05:00') AS actualizado_el
+                    creado_el,
+                    actualizado_el
                 FROM personas_expuestas_publicamente";
         $result = $db->query($query);
         $persExpuestasPubl = [];

@@ -54,7 +54,7 @@ class SolicitudAhorro {
                 monto_total_ahorrar,
                 quincena,
                 mes,
-                CONVERT_TZ(fecha_solicitud, '+00:00', '-05:00') AS fecha_solicitud
+                fecha_solicitud
             FROM solicitudes_ahorro
             WHERE id = ?");
         $query->bind_param("i", $id);
@@ -79,7 +79,7 @@ class SolicitudAhorro {
                 monto_total_ahorrar,
                 quincena,
                 mes,
-                DATE_FORMAT(CONVERT_TZ(fecha_solicitud, '+00:00', '-05:00'), '%d/%m/%Y') AS fecha_solicitud
+                DATE_FORMAT(fecha_solicitud, '%d/%m/%Y') AS fecha_solicitud
             FROM solicitudes_ahorro
             WHERE id_usuario = ?
             ORDER BY fecha_solicitud
@@ -109,7 +109,7 @@ class SolicitudAhorro {
                     monto_total_ahorrar,
                     quincena,
                     mes,
-                    CONVERT_TZ(fecha_solicitud, '+00:00', '-05:00') AS fecha_solicitud
+                    fecha_solicitud
                 FROM solicitudes_ahorro";
         $result = $db->query($query);
         $solicitudes = [];
@@ -146,7 +146,7 @@ class SolicitudAhorro {
                     monto_total_ahorrar,
                     quincena,
                     mes,
-                    CONVERT_TZ(fecha_solicitud, '+00:00', '-05:00') AS fecha_solicitud
+                    fecha_solicitud
                 FROM solicitudes_ahorro $searchQuery
                 ORDER BY fecha_solicitud
                 DESC

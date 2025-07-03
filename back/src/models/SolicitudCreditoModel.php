@@ -59,7 +59,7 @@ class SolicitudCredito {
                 periocidad_pago,
                 tasa_interes,
                 ruta_documento,
-                CONVERT_TZ(fecha_solicitud, '+00:00', '-05:00') AS fecha_solicitud 
+                fecha_solicitud 
             FROM solicitudes_credito
             WHERE id = ?");
         $query->bind_param("i", $id);
@@ -88,7 +88,7 @@ class SolicitudCredito {
                 periocidad_pago,
                 tasa_interes,
                 ruta_documento,
-                CONVERT_TZ(fecha_solicitud, '+00:00', '-05:00') AS fecha_solicitud 
+                fecha_solicitud 
             FROM solicitudes_credito
             WHERE id_usuario = ?");
         $query->bind_param("i", $idUsuario);
@@ -120,7 +120,7 @@ class SolicitudCredito {
                     periocidad_pago,
                     tasa_interes,
                     ruta_documento,
-                    CONVERT_TZ(fecha_solicitud, '+00:00', '-05:00') AS fecha_solicitud
+                    fecha_solicitud
                 FROM solicitudes_credito";
         $result = $db->query($query);
         $solicitudes = [];
@@ -153,7 +153,7 @@ class SolicitudCredito {
                 sc.periocidad_pago,
                 sc.tasa_interes,
                 sc.ruta_documento,
-                CONVERT_TZ(sc.fecha_solicitud, '+00:00', '-05:00') AS fecha_solicitud,
+                sc.fecha_solicitud AS fecha_solicitud,
                 u.primer_nombre,
                 u.segundo_nombre,
                 u.primer_apellido,
@@ -189,7 +189,7 @@ class SolicitudCredito {
             }
             $fechaSQL = $fechaConvertida->format('Y-m-d');
     
-            $whereConditions[] = "DATE(CONVERT_TZ(sc.fecha_solicitud, '+00:00', '-05:00')) = ?";
+            $whereConditions[] = "DATE(sc.fecha_solicitud) = ?";
             $params[] = $fechaSQL;
             $types .= "s";
         }
@@ -293,7 +293,7 @@ class SolicitudCredito {
                 periocidad_pago,
                 tasa_interes,
                 ruta_documento,
-                CONVERT_TZ(fecha_solicitud, '+00:00', '-05:00') AS fecha_solicitud
+                fecha_solicitud
             FROM solicitudes_credito
             WHERE fecha_solicitud
             BETWEEN ?

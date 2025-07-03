@@ -92,7 +92,6 @@ export class ManageSocialOversightComponent {
       segundoNombre: [''],
       usuario: ['', Validators.required],
       id_rol: [4, Validators.required],
-      id_tipo_asociado: [3],
       activo: [true, Validators.required],
     });
 
@@ -162,13 +161,10 @@ export class ManageSocialOversightComponent {
 
   changeState(id: number): void {
     const user = this.users.find((user) => user.id === id);
-    //console.log("id", id);
     if (user) {
       this.userService.changeState(id).subscribe({
-        next: (response) => {
-          // Actualiza el estado del usuario en la lista
+        next: () => {
           user.activo = user.activo === 0 ? 1 : 0;
-          //console.log('Estado del usuario actualizado');
         },
         error: (err) => {
           console.error('Error al cambiar el estado del usuario', err);
@@ -179,10 +175,8 @@ export class ManageSocialOversightComponent {
 
   editUser(id: number): void {
     const user = this.users.find((user) => user.id === id);
-    //console.log(user);
     if (user) {
       this.isEditMode = true;
-      //this.editUserForm.patchValue({ id_tipo_asociado: 3 });
       this.editUserForm.patchValue(user);
     }
   }
@@ -190,7 +184,7 @@ export class ManageSocialOversightComponent {
   createUser(): void {
     this.isEditMode = false;
     this.formReset();
-    this.editUserForm.patchValue({ activo: 1, id_rol: 4, idTipoDocumento: '' }); // Establecer el estado activo como true por defecto
+    this.editUserForm.patchValue({ activo: 1, id_rol: 4, idTipoDocumento: '' });
   }
 
   openResetPasswordModal(userId: number) {
@@ -200,14 +194,14 @@ export class ManageSocialOversightComponent {
   confirmResetPassword() {
     if (this.selectedUserId !== null) {
       this.userService.resetPassword(this.selectedUserId).subscribe({
-        next: (response) => {
+        next: () => {
           this.messageService.add({
             severity: 'success',
             summary: 'Éxito',
             detail: 'Contraseña restablecida con éxito.',
           });
         },
-        error: (error) => {
+        error: () => {
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
@@ -219,9 +213,9 @@ export class ManageSocialOversightComponent {
   }
 
   submit(): void {
-    //console.log(this.editUserForm.value);
     if (this.editUserForm.valid) {
       const userFormData = this.editUserForm.value;
+      userFormData.id_tipo_asociado = 3;
       if (this.isEditMode) {
         this.userService.update(userFormData).subscribe({
           next: () => {
@@ -250,7 +244,6 @@ export class ManageSocialOversightComponent {
       } else {
         this.userService.create(userFormData).subscribe({
           next: () => {
-            //console.log(userFormData);
             this.users.push(userFormData);
             this.formReset();
             this.messageService.add({

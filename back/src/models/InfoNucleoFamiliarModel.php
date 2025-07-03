@@ -82,8 +82,8 @@ class InformacionNucleoFamiliar {
                 id_nivel_educativo,
                 trabaja,
                 celular,
-                CONVERT_TZ(`creado_el`, '+00:00', '-05:00') AS `creado_el`,
-                CONVERT_TZ(`actualizado_el`, '+00:00', '-05:00') AS `actualizado_el`
+                creado_el,
+                actualizado_el
                 FROM informacion_nucleo_familiar WHERE id = ?
             ");
         $query->bind_param("i", $id);
@@ -115,8 +115,8 @@ class InformacionNucleoFamiliar {
                 id_nivel_educativo,
                 trabaja,
                 celular,
-                CONVERT_TZ(`creado_el`, '+00:00', '-05:00') AS `creado_el`,
-                CONVERT_TZ(`actualizado_el`, '+00:00', '-05:00') AS `actualizado_el`
+                creado_el,
+                actualizado_el
             FROM informacion_nucleo_familiar WHERE id_usuario = ?");
         $query->bind_param("i", $idUsuario);
         $query->execute();
@@ -151,8 +151,8 @@ class InformacionNucleoFamiliar {
                     id_nivel_educativo,
                     trabaja,
                     celular,
-                    CONVERT_TZ(`creado_el`, '+00:00', '-05:00') AS `creado_el`,
-                    CONVERT_TZ(`actualizado_el`, '+00:00', '-05:00') AS `actualizado_el`
+                    creado_el,
+                    actualizado_el
                 FROM informacion_nucleo_familiar";
         $result = $db->query($query);
         $infoFamiliarArray = [];

@@ -76,8 +76,8 @@ class OperacionesInternacionales {
                 moneda_cuenta,
                 id_pais_cuenta,
                 ciudad_cuenta,
-                CONVERT_TZ(creado_el, '+00:00', '-05:00') AS creado_el,
-                CONVERT_TZ(actualizado_el, '+00:00', '-05:00') AS actualizado_el
+                creado_el,
+                actualizado_el
             FROM operaciones_internacionales 
             WHERE id = ?
             ");
@@ -108,8 +108,8 @@ class OperacionesInternacionales {
                 moneda_cuenta,
                 id_pais_cuenta,
                 ciudad_cuenta,
-                CONVERT_TZ(creado_el, '+00:00', '-05:00') AS creado_el,
-                CONVERT_TZ(actualizado_el, '+00:00', '-05:00') AS actualizado_el
+                creado_el,
+                actualizado_el
             FROM operaciones_internacionales
             WHERE id_usuario = ?
             ");
@@ -139,8 +139,8 @@ class OperacionesInternacionales {
                     moneda_cuenta,
                     id_pais_cuenta,
                     ciudad_cuenta,
-                    CONVERT_TZ(creado_el, '+00:00', '-05:00') AS creado_el,
-                    CONVERT_TZ(actualizado_el, '+00:00', '-05:00') AS actualizado_el
+                    creado_el,
+                    actualizado_el
                 FROM operaciones_internacionales";
         $result = $db->query($query);
         $operaciones = [];

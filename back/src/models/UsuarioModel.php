@@ -128,8 +128,8 @@ class Usuario {
                 id_tipo_asociado,
                 activo,
                 primer_ingreso,
-                DATE_FORMAT(CONVERT_TZ(creado_el, '+00:00', '-05:00'), '%d/%m/%Y %H:%i:%s') AS creado_el,
-                DATE_FORMAT(CONVERT_TZ(actualizado_el, '+00:00', '-05:00'), '%d/%m/%Y %H:%i:%s') AS actualizado_el
+                DATE_FORMAT(creado_el, '%d/%m/%Y %H:%i:%s') AS creado_el,
+                DATE_FORMAT(actualizado_el, '%d/%m/%Y %H:%i:%s') AS actualizado_el
             FROM usuarios
             WHERE id = ?");
         $query->bind_param("i", $id);
@@ -161,8 +161,8 @@ class Usuario {
                 id_tipo_asociado,
                 activo,
                 primer_ingreso,
-                DATE_FORMAT(CONVERT_TZ(creado_el, '+00:00', '-05:00'), '%d/%m/%Y %H:%i:%s') AS creado_el,
-                DATE_FORMAT(CONVERT_TZ(actualizado_el, '+00:00', '-05:00'), '%d/%m/%Y %H:%i:%s') AS actualizado_el
+                DATE_FORMAT(creado_el, '%d/%m/%Y %H:%i:%s') AS creado_el,
+                DATE_FORMAT(actualizado_el, '%d/%m/%Y %H:%i:%s') AS actualizado_el
             FROM usuarios WHERE numero_documento = ?");
         $query->bind_param("s", $numDocumento);
         $query->execute();
@@ -204,8 +204,8 @@ class Usuario {
                     id_tipo_asociado,
                     activo,
                     primer_ingreso,
-                    DATE_FORMAT(CONVERT_TZ(creado_el, '+00:00', '-05:00'), '%d/%m/%Y %H:%i:%s') AS creado_el,
-                    DATE_FORMAT(CONVERT_TZ(actualizado_el, '+00:00', '-05:00'), '%d/%m/%Y %H:%i:%s') AS actualizado_el
+                    DATE_FORMAT(creado_el, '%d/%m/%Y %H:%i:%s') AS creado_el,
+                    DATE_FORMAT(actualizado_el, '%d/%m/%Y %H:%i:%s') AS actualizado_el
                 FROM usuarios";
         $result = $db->query($query);
         $users = [];
@@ -234,8 +234,8 @@ class Usuario {
                     id_tipo_asociado,
                     activo,
                     primer_ingreso,
-                    DATE_FORMAT(CONVERT_TZ(creado_el, '+00:00', '-05:00'), '%d/%m/%Y %H:%i:%s') AS creado_el,
-                    DATE_FORMAT(CONVERT_TZ(actualizado_el, '+00:00', '-05:00'), '%d/%m/%Y %H:%i:%s') AS actualizado_el
+                    DATE_FORMAT(creado_el, '%d/%m/%Y %H:%i:%s') AS creado_el,
+                    DATE_FORMAT(actualizado_el, '%d/%m/%Y %H:%i:%s') AS actualizado_el
                 FROM usuarios
                 WHERE id_rol = ?";
     
@@ -368,8 +368,8 @@ class Usuario {
                 id_tipo_asociado,
                 activo,
                 primer_ingreso,
-                DATE_FORMAT(CONVERT_TZ(creado_el, '+00:00', '-05:00'), '%d/%m/%Y %H:%i:%s') AS creado_el,
-                DATE_FORMAT(CONVERT_TZ(actualizado_el, '+00:00', '-05:00'), '%d/%m/%Y %H:%i:%s') AS actualizado_el
+                DATE_FORMAT(creado_el, '%d/%m/%Y %H:%i:%s') AS creado_el,
+                DATE_FORMAT(actualizado_el, '%d/%m/%Y %H:%i:%s') AS actualizado_el
             FROM usuarios
             WHERE usuario = ?
             AND activo = 1");
@@ -651,13 +651,13 @@ class Usuario {
                 personas_expuestas_publicamente pep ON pep.id_usuario = u.id
             WHERE 
                 (SELECT MAX(actualizado_el) FROM (
-                    SELECT CONVERT_TZ(actualizado_el, '+00:00', '-05:00') AS actualizado_el FROM personas_naturales WHERE id_usuario = u.id
+                    SELECT actualizado_el FROM personas_naturales WHERE id_usuario = u.id
                     UNION ALL
-                    SELECT CONVERT_TZ(actualizado_el, '+00:00', '-05:00') AS actualizado_el FROM informacion_financiera WHERE id_usuario = u.id
+                    SELECT actualizado_el FROM informacion_financiera WHERE id_usuario = u.id
                     UNION ALL
-                    SELECT CONVERT_TZ(actualizado_el, '+00:00', '-05:00') AS actualizado_el FROM informacion_nucleo_familiar WHERE id_usuario = u.id
+                    SELECT actualizado_el FROM informacion_nucleo_familiar WHERE id_usuario = u.id
                     UNION ALL
-                    SELECT CONVERT_TZ(actualizado_el, '+00:00', '-05:00') AS actualizado_el FROM referencias_personales_comerciales_bancarias WHERE id_usuario = u.id
+                    SELECT actualizado_el FROM referencias_personales_comerciales_bancarias WHERE id_usuario = u.id
                 ) AS subquery) BETWEEN ? AND ?
             GROUP BY 
                 u.id;

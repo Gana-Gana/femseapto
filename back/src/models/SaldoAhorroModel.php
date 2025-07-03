@@ -108,8 +108,8 @@ class SaldoAhorro
                 ahorro_quincenal,
                 valor_saldo,
                 fecha_corte,
-                CONVERT_TZ(creado_el, '+00:00', '-05:00') AS creado_el,
-                CONVERT_TZ(actualizado_el, '+00:00', '-05:00') AS actualizado_el
+                creado_el,
+                actualizado_el
             FROM saldo_ahorros
             WHERE id = ?");
         $stmt->bind_param("i", $id);
@@ -139,8 +139,8 @@ class SaldoAhorro
                 ahorro_quincenal,
                 valor_saldo,
                 fecha_corte,
-                CONVERT_TZ(creado_el, '+00:00', '-05:00') AS creado_el,
-                CONVERT_TZ(actualizado_el, '+00:00', '-05:00') AS actualizado_el
+                creado_el,
+                actualizado_el
             FROM saldo_ahorros
             WHERE id_usuario = ?");
         $stmt->bind_param("i", $idUsuario);
@@ -169,8 +169,8 @@ class SaldoAhorro
                 ahorro_quincenal,
                 valor_saldo,
                 fecha_corte,
-                CONVERT_TZ(creado_el, '+00:00', '-05:00') AS creado_el,
-                CONVERT_TZ(actualizado_el, '+00:00', '-05:00') AS actualizado_el
+                creado_el,
+                actualizado_el
             FROM saldo_ahorros
             WHERE id_usuario = ? 
             AND id_linea_ahorro = ?");
@@ -200,8 +200,8 @@ class SaldoAhorro
                 ahorro_quincenal,
                 valor_saldo,
                 fecha_corte,
-                CONVERT_TZ(creado_el, '+00:00', '-05:00') AS creado_el,
-                CONVERT_TZ(actualizado_el, '+00:00', '-05:00') AS actualizado_el
+                creado_el,
+                actualizado_el
             FROM saldo_ahorros");
 
         $saldos = [];

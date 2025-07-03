@@ -120,8 +120,8 @@ class SaldoCredito
                 valor_pagado,
                 valor_saldo,
                 fecha_corte,
-                CONVERT_TZ(creado_el, '+00:00', '-05:00') AS creado_el,
-                CONVERT_TZ(actualizado_el, '+00:00', '-05:00') AS actualizado_el
+                creado_el,
+                actualizado_el
             FROM saldo_creditos
             WHERE id = ?");
         $stmt->bind_param("i", $id);
@@ -155,8 +155,8 @@ class SaldoCredito
                 valor_pagado,
                 valor_saldo,
                 DATE_FORMAT(fecha_corte, '%d/%m/%Y') as fecha_corte,
-                DATE_FORMAT(CONVERT_TZ(creado_el, '+00:00', '-05:00'), '%d/%m/%Y') AS creado_el,
-                DATE_FORMAT(CONVERT_TZ(actualizado_el, '+00:00', '-05:00'), '%d/%m/%Y') AS actualizado_el
+                DATE_FORMAT(creado_el, '%d/%m/%Y') AS creado_el,
+                DATE_FORMAT(actualizado_el, '%d/%m/%Y') AS actualizado_el
             FROM saldo_creditos
             WHERE id_usuario = ?");
         $stmt->bind_param("i", $idUsuario);
@@ -189,8 +189,8 @@ class SaldoCredito
                 valor_pagado,
                 valor_saldo,
                 fecha_corte,
-                CONVERT_TZ(creado_el, '+00:00', '-05:00') AS creado_el,
-                CONVERT_TZ(actualizado_el, '+00:00', '-05:00') AS actualizado_el
+                creado_el,
+                actualizado_el
             FROM saldo_creditos
             WHERE id_usuario = ?
             AND id_linea_credito = ?");
@@ -224,8 +224,8 @@ class SaldoCredito
                 valor_pagado,
                 valor_saldo,
                 fecha_corte,
-                CONVERT_TZ(creado_el, '+00:00', '-05:00') AS creado_el,
-                CONVERT_TZ(actualizado_el, '+00:00', '-05:00') AS actualizado_el
+                creado_el,
+                actualizado_el
             FROM saldo_creditos");
 
         $saldos = [];

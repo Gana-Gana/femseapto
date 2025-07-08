@@ -1,5 +1,4 @@
 <?php
-// Incluir el controlador de PersonaNatural
 require_once '../src/controllers/ReferenciaPerComBancController.php';
 require_once '../auth/verifyToken.php';
 require_once '../config/cors.php';
@@ -12,29 +11,25 @@ $decodedToken = verifyJWTToken($token, $key);
 if ($decodedToken === null) {
     http_response_code(401);
     echo json_encode(array("message" => "Token no válido o no proporcionado."));
-    exit(); // Terminar la ejecución si el token no es válido
+    exit();
 }
 
-// Crear una instancia del controlador
 $controlador = new ReferenciaPersonalComercialBancariaController();
 
-// Verificar el método de solicitud HTTP
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    //$datos = $_POST;
     $datos = json_decode(file_get_contents("php://input"), true);
     $idNuevo = $controlador->crear($datos);
-    echo json_encode(['id' => $idNuevo]); // Devuelve el ID de la nueva persona creada
+    echo json_encode(['id' => $idNuevo]);
 } elseif ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     $datos = json_decode(file_get_contents("php://input"), true);
-    $idExistente = $datos['id']; // Obtener el ID de la persona a actualizar
+    $idExistente = $datos['id'];
     $actualizacionExitosa = $controlador->actualizar($idExistente, $datos);
-    echo json_encode(['success' => $actualizacionExitosa]); // Devuelve true si la actualización fue exitosa
+    echo json_encode(['success' => $actualizacionExitosa]);
 } elseif ($_SERVER['REQUEST_METHOD'] === 'GET') {
     if (isset($_GET['id'])) {
         $id = $_GET['id'];
         $usuario = $controlador->obtenerPorId($id);
         if ($usuario) {
-            // Establecer el encabezado de respuesta JSON
             header('Content-Type: application/json');
             echo json_encode($usuario);
         } else {
@@ -45,7 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $id = $_GET['idUsuario'];
         $usuario = $controlador->obtenerPorIdUsuario($id);
         if ($usuario) {
-            // Establecer el encabezado de respuesta JSON
             header('Content-Type: application/json');
             echo json_encode($usuario);
         } else {
@@ -77,7 +71,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         echo json_encode(array("message" => "ID no proporcionado."));
     }
 } elseif($_SERVER['REQUEST_METHOD'] === 'DELETE') {
-    // Obtener el ID del registro a eliminar
     $idEliminar = $_GET['id'];
 
     $eliminacionExitosa = $controlador->eliminar($idEliminar);

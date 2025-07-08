@@ -2,6 +2,7 @@ import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router, RouterOutlet, NavigationEnd } from '@angular/router';
 import { filter } from 'rxjs/operators';
+import { InactivityService } from './services/inactivity.service';
 
 @Component({
   selector: 'app-root',
@@ -13,9 +14,14 @@ import { filter } from 'rxjs/operators';
 export class AppComponent {
   title = 'front';
 
-  private router = inject(Router);
-
-  constructor() {
+  constructor(
+    private router: Router,
+    private inactivityService: InactivityService
+  ) {
+    // console.log("%c App component initialized", "color: green; font-size: 16px; font-weight: bold");
+    // console.log("%c Timeout value: " + this.inactivityService.timeoutInMs + " ms", "color: blue; font-size: 14px");
+    
+    this.inactivityService.startMonitoring();    
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe(() => {

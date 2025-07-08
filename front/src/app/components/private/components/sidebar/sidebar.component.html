@@ -11,14 +11,14 @@
   </div>
   <div class="offcanvas-body">
     <div id="sidebar" class="flex-shrink-0 p-3">
-      <a [routerLink]="userRole === 1 ? '/auth/admin' : (userRole === 2 ? '/auth/user' : '/auth/executive')"
+      <a [routerLink]="userRole === 1 ? '/auth/admin' : (userRole === 2 ? '/auth/user' : (userRole === 3 ? '/auth/executive' : (userRole === 4 ? '/auth/social-oversight' : (userRole === 5 ? '/auth/committee' : '/auth/user'))))" 
         class="d-flex align-items-center pb-3 mb-3 link-body-emphasis text-decoration-none border-bottom">
         <svg xmlns="http://www.w3.org/2000/svg" width="30" height="24" fill="currentColor"
           class="bi bi-person-fill-gear" viewBox="0 0 16 16">
           <path
             d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0m-9 8c0 1 1 1 1 1h5.256A4.5 4.5 0 0 1 8 12.5a4.5 4.5 0 0 1 1.544-3.393Q8.844 9.002 8 9c-5 0-6 3-6 4m9.886-3.54c.18-.613 1.048-.613 1.229 0l.043.148a.64.64 0 0 0 .921.382l.136-.074c.561-.306 1.175.308.87.869l-.075.136a.64.64 0 0 0 .382.92l.149.045c.612.18.612 1.048 0 1.229l-.15.043a.64.64 0 0 0-.38.921l.074.136c.305.561-.309 1.175-.87.87l-.136-.075a.64.64 0 0 0-.92.382l-.045.149c-.18.612-1.048.612-1.229 0l-.043-.15a.64.64 0 0 0-.921-.38l-.136.074c-.561.305-1.175-.309-.87-.87l.075-.136a.64.64 0 0 0-.382-.92l-.148-.045c-.613-.18-.613-1.048 0-1.229l.148-.043a.64.64 0 0 0 .382-.921l-.074-.136c-.306-.561.308-1.175.869-.87l.136.075a.64.64 0 0 0 .92-.382zM14 12.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0" />
         </svg>
-        <span class="fs-5 fw-semibold text-center">{{ userRole === 1 ? 'Panel de administrador' : (userRole === 2 ? 'Panel de usuario' : 'Panel de ejecutivo')
+        <span class="fs-5 fw-semibold text-center">{{ userRole === 1 ? 'Panel de administrador' : (userRole === 2 ? 'Panel de usuario' : (userRole === 3 ? 'Panel de ejecutivo' : (userRole === 4 ? 'Panel de control social' : (userRole === 5 ? 'Panel del comité' : 'Panel de usuario')))) 
           }}</span>
       </a>
       <ul class="list-unstyled ps-0">
@@ -48,6 +48,18 @@
             <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
               <li><a routerLink="/auth/admin/savings-withdrawals"
                   class="link-body-emphasis d-inline-flex text-decoration-none rounded">Solicitudes de retiro de ahorro</a></li>
+            </ul>
+          </div>
+        </li>
+        <li class="mb-1" *ngIf="userRole === 1">
+          <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed"
+            data-bs-toggle="collapse" data-bs-target="#admin-allowance-collapse" aria-expanded="false">
+            Auxilios
+          </button>
+          <div class="collapse" id="admin-allowance-collapse">
+            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+              <li><a routerLink="/auth/admin/allowances"
+                  class="link-body-emphasis d-inline-flex text-decoration-none rounded">Solicitudes de Auxilios</a></li>
             </ul>
           </div>
         </li>
@@ -90,6 +102,10 @@
                 class="link-body-emphasis d-inline-flex text-decoration-none rounded">Gestionar Administradores</a></li>
               <li><a routerLink="/auth/admin/manage/executive"
                 class="link-body-emphasis d-inline-flex text-decoration-none rounded">Gestionar Directivos</a></li>
+              <li><a routerLink="/auth/admin/manage/social-oversight"
+                class="link-body-emphasis d-inline-flex text-decoration-none rounded">Gestionar Contro Social</a></li>
+              <li><a routerLink="/auth/admin/manage/committee"
+                class="link-body-emphasis d-inline-flex text-decoration-none rounded">Gestionar Comité</a></li>
             </ul>
           </div>
         </li>
@@ -159,6 +175,20 @@
             </ul>
           </div>
         </li>
+        <!-- Sección de Auxilios para móvil -->
+        <li class="mb-1" *ngIf="userRole === 2">
+          <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed"
+            data-bs-toggle="collapse" data-bs-target="#allowance-mobile-collapse" aria-expanded="false">
+            Auxilios
+          </button>
+          <div class="collapse" id="allowance-mobile-collapse">
+            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+              <li>
+                <a routerLink="/auth/user/request/allowance" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Solicitar auxilio</a>
+              </li>
+            </ul>
+          </div>
+        </li>
         <!-- SIDEBAR DE EJECUTIVOS -->
         <li class="mb-1" *ngIf="userRole === 3">
           <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed"
@@ -169,6 +199,32 @@
             <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
               <li><a routerLink="/auth/executive/reports"
                   class="link-body-emphasis d-inline-flex text-decoration-none rounded">Ver informes</a></li>
+            </ul>
+          </div>
+        </li>
+        <!-- SIDEBAR DE CONTROL SOCIAL -->
+        <li class="mb-1" *ngIf="userRole === 4">
+          <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed"
+            data-bs-toggle="collapse" data-bs-target="#report-collapse" aria-expanded="false">
+            Reportes
+          </button>
+          <div class="collapse" id="report-collapse">
+            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+              <li><a routerLink="/auth/social-oversight/allowances"
+                  class="link-body-emphasis d-inline-flex text-decoration-none rounded">Ver Solictudes de Auxilios</a></li>
+            </ul>
+          </div>
+        </li>
+        <!-- SIDEBAR DE COMITÉ -->
+        <li class="mb-1" *ngIf="userRole === 5">
+          <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed"
+            data-bs-toggle="collapse" data-bs-target="#report-collapse" aria-expanded="false">
+            Reportes
+          </button>
+          <div class="collapse" id="report-collapse">
+            <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+              <li><a routerLink="/auth/committee/allowances"
+                  class="link-body-emphasis d-inline-flex text-decoration-none rounded">Ver Solictudes de Auxilios</a></li>
             </ul>
           </div>
         </li>
@@ -183,14 +239,14 @@
 
 <!-- Sidebar fijo para escritorio -->
 <div id="sidebar" class="d-none d-xl-block flex-shrink-0 p-3">
-  <a [routerLink]="userRole === 1 ? '/auth/admin' : (userRole === 2 ? '/auth/user' : '/auth/executive')"
+  <a [routerLink]="userRole === 1 ? '/auth/admin' : (userRole === 2 ? '/auth/user' : (userRole === 3 ? '/auth/executive' : (userRole === 4 ? '/auth/social-oversight' : (userRole === 5 ? '/auth/committee' : '/auth/user'))))"
     class="d-flex align-items-center pb-3 mb-3 link-body-emphasis text-decoration-none border-bottom">
     <svg xmlns="http://www.w3.org/2000/svg" width="30" height="24" fill="currentColor" class="bi bi-person-fill-gear"
       viewBox="0 0 16 16">
       <path
         d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0m-9 8c0 1 1 1 1 1h5.256A4.5 4.5 0 0 1 8 12.5a4.5 4.5 0 0 1 1.544-3.393Q8.844 9.002 8 9c-5 0-6 3-6 4m9.886-3.54c.18-.613 1.048-.613 1.229 0l.043.148a.64.64 0 0 0 .921.382l.136-.074c.561-.306 1.175.308.87.869l-.075.136a.64.64 0 0 0 .382.92l.149.045c.612.18.612 1.048 0 1.229l-.15.043a.64.64 0 0 0-.38.921l.074.136c.305.561-.309 1.175-.87.87l-.136-.075a.64.64 0 0 0-.92.382l-.045.149c-.18.612-1.048.612-1.229 0l-.043-.15a.64.64 0 0 0-.921-.38l-.136.074c-.561.305-1.175-.309-.87-.87l.075-.136a.64.64 0 0 0-.382-.92l-.148-.045c-.613-.18-.613-1.048 0-1.229l.148-.043a.64.64 0 0 0 .382-.921l-.074-.136c-.306-.561.308-1.175.869-.87l.136.075a.64.64 0 0 0 .92-.382zM14 12.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0" />
     </svg>
-    <span class="fs-5 fw-semibold text-center">{{ userRole === 1 ? 'Panel de administrador' : (userRole === 2 ? 'Panel de usuario' : 'Panel de ejecutivo') 
+    <span class="fs-5 fw-semibold text-center">{{ userRole === 1 ? 'Panel de administrador' : (userRole === 2 ? 'Panel de usuario' : (userRole === 3 ? 'Panel de ejecutivo' : (userRole === 4 ? 'Panel de control social' : (userRole === 5 ? 'Panel del comité' : 'Panel de usuario')))) 
       }}</span>
   </a>
   <ul class="list-unstyled ps-0">
@@ -220,6 +276,18 @@
         <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
           <li><a routerLink="/auth/admin/savings-withdrawals"
               class="link-body-emphasis d-inline-flex text-decoration-none rounded">Solicitudes de retiro de ahorro</a></li>
+        </ul>
+      </div>
+    </li>
+    <li class="mb-1" *ngIf="userRole === 1">
+      <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed"
+        data-bs-toggle="collapse" data-bs-target="#admin-allowance-collapse" aria-expanded="false">
+        Auxilios
+      </button>
+      <div class="collapse" id="admin-allowance-collapse">
+        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+          <li><a routerLink="/auth/admin/allowances"
+              class="link-body-emphasis d-inline-flex text-decoration-none rounded">Solicitudes de Auxilios</a></li>
         </ul>
       </div>
     </li>
@@ -262,6 +330,10 @@
             class="link-body-emphasis d-inline-flex text-decoration-none rounded">Gestionar Administradores</a></li>
           <li><a routerLink="/auth/admin/manage/executive"
             class="link-body-emphasis d-inline-flex text-decoration-none rounded">Gestionar Directivos</a></li>
+          <li><a routerLink="/auth/admin/manage/social-oversight"
+            class="link-body-emphasis d-inline-flex text-decoration-none rounded">Gestionar Control Social</a></li>
+          <li><a routerLink="/auth/admin/manage/committee"
+            class="link-body-emphasis d-inline-flex text-decoration-none rounded">Gestionar Comité</a></li>
         </ul>
       </div>
     </li>
@@ -331,6 +403,20 @@
         </ul>
       </div>
     </li>
+        <li class="mb-1" *ngIf="userRole === 2">
+      <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed"
+        data-bs-toggle="collapse" data-bs-target="#allowance-desktop-collapse" aria-expanded="false">
+        Auxilios
+      </button>
+      <div class="collapse" id="allowance-desktop-collapse">
+        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+          <li>
+            <a routerLink="/auth/user/request/allowance" class="link-body-emphasis d-inline-flex text-decoration-none rounded">Solicitar auxilio</a>
+          </li>
+        </ul>
+      </div>
+    </li>
+
     <!-- SIDEBAR DE EJECUTIVOS -->
     <li class="mb-1" *ngIf="userRole === 3">
       <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed"
@@ -340,6 +426,32 @@
       <div class="collapse" id="report-collapse">
         <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
           <li><a routerLink="/auth/executive/reports"
+              class="link-body-emphasis d-inline-flex text-decoration-none rounded">Ver informes</a></li>
+        </ul>
+      </div>
+    </li>
+    <!-- SIDEBAR DE CONTROL SOCIAL -->
+    <li class="mb-1" *ngIf="userRole === 4">
+      <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed"
+        data-bs-toggle="collapse" data-bs-target="#report-collapse" aria-expanded="false">
+        Reportes
+      </button>
+      <div class="collapse" id="report-collapse">
+        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+          <li><a routerLink="/auth/social-oversight/allowances"
+              class="link-body-emphasis d-inline-flex text-decoration-none rounded">Ver informes</a></li>
+        </ul>
+      </div>
+    </li>
+    <!-- SIDEBAR DE COMITÉ -->
+    <li class="mb-1" *ngIf="userRole === 5">
+      <button class="btn btn-toggle d-inline-flex align-items-center rounded border-0 collapsed"
+        data-bs-toggle="collapse" data-bs-target="#report-collapse" aria-expanded="false">
+        Reportes
+      </button>
+      <div class="collapse" id="report-collapse">
+        <ul class="btn-toggle-nav list-unstyled fw-normal pb-1 small">
+          <li><a routerLink="/auth/committee/allowances"
               class="link-body-emphasis d-inline-flex text-decoration-none rounded">Ver informes</a></li>
         </ul>
       </div>

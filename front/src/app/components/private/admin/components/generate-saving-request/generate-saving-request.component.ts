@@ -51,70 +51,38 @@ export class GenerateSavingRequestComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.loadData();
   }
 
-  loadData() {
-    if (this.userId !== null) {
-      this.userService.getById(this.userId).subscribe({
-        next: (user: User) => {
-          this.nombreCompleto = `${user.primerNombre || ''} ${user.segundoNombre || ''} ${user.primerApellido || ''} ${user.segundoApellido || ''}`.trim();
-          this.numeroDocumento = Number(user.numeroDocumento);
-          this.tipoAsociado = user.id_tipo_asociado;
-          this.naturalPersonService.getByUserId(this.userId).subscribe({
-            next: (person) => {
-              this.celular = person.celular;
-              this.citiesService.getById(person.mpioExpDoc).subscribe({
-                next: (city) => {
-                  this.municipioExpedicionDocumento = city.nombre;
-                  this.companyService.getById(person.idEmpresaLabor).subscribe({
-                    next: (company) => {
-                      this.nombreEmpresa = company.nombre;
-                      this.solicitudAhorroService.getById(this.idSolicitudAhorro).subscribe({
-                        next: (solicitud) => {
-                          this.valorTotalAhorro = solicitud.montoTotalAhorrar;
-                          this.quincena = solicitud.quincena;
-                          this.mes = solicitud.mes;
-                          this.lineasAhorro = solicitud.lineas || [];
-                          this.financialInfoService.getByUserId(this.userId).subscribe({
-                            next: (financialInfo) => {
-                              this.salario = financialInfo.ingresosMensuales;
-                            },
-                            error: (err) => {
-                              console.error('Error al obtener la información financiera', err);
-                            }
-                          });
-                        },
-                        error: (err) => {
-                          console.error('Error al obtener la solicitud de ahorro', err);
-                        }
-                      });
-                    },
-                    error: (err) => {
-                      console.error('Error al obtener el nombre de la empresa', err);
-                    }
-                  });
-                },
-                error: (err) => {
-                  console.error('Error al obtener el municipio de expedición del documento', err);
-                }
-              });
-            },
-            error: (err) => {
-              console.error('Error al obtener los datos de la persona natural', err);
-            }
-          });
-        },
-        error: (err) => {
-          console.error('Error al obtener los datos del usuario', err);
-        }
-      });
-    }
+  async loadData() {
+    const user = await firstValueFrom(this.userService.getById(this.userId));
+    this.nombreCompleto = `${user.primerNombre || ''} ${user.segundoNombre || ''} ${user.primerApellido || ''} ${user.segundoApellido || ''}`.trim();
+    this.numeroDocumento = Number(user.numeroDocumento);
+    this.tipoAsociado = user.id_tipo_asociado;
+
+    const person = await firstValueFrom(this.naturalPersonService.getByUserId(this.userId));
+    this.celular = person.celular;
+
+    const city = await firstValueFrom(this.citiesService.getById(person.mpioExpDoc));
+    this.municipioExpedicionDocumento = city.nombre;
+
+    const company = await firstValueFrom(this.companyService.getById(person.idEmpresaLabor));
+    this.nombreEmpresa = company.nombre;
+
+    const solicitud = await firstValueFrom(this.solicitudAhorroService.getById(this.idSolicitudAhorro));
+    this.valorTotalAhorro = solicitud.montoTotalAhorrar;
+    this.quincena = solicitud.quincena;
+    this.mes = solicitud.mes;
+    this.lineasAhorro = solicitud.lineas || [];
+
+    const financialInfo = await firstValueFrom(this.financialInfoService.getByUserId(this.userId));
+    this.salario = financialInfo.ingresosMensuales;
   }
 
   async generateExcel() {
+    this.isLoading = true;
     const workbook = new ExcelJS.Workbook();
     try {
+      await this.loadData();
       const templateUrl = this.tipoAsociado === 1 ? '/assets/SOLICITAR_AHORRO_NOMINA.xlsx' : '/assets/SOLICITAR_AHORRO_COMISION.xlsx';
       await this.loadTemplate(workbook, templateUrl);
       const worksheet = workbook.getWorksheet(1);
@@ -245,6 +213,8 @@ export class GenerateSavingRequestComponent implements OnInit {
       }
     } catch (error) {
       console.error('Error loading template', error);
+    } finally {
+      this.isLoading = false;
     }
   }
 
@@ -273,9 +243,6 @@ export class GenerateSavingRequestComponent implements OnInit {
 
   onGenerateClick() {
     this.isLoading = true;
-    setTimeout(() => {
-      this.generateExcel();
-      this.isLoading = false;
-    }, 5000);
+    this.generateExcel();
   }
 }

@@ -1,5 +1,5 @@
 <?php
-
+require_once '../config/cors.php';
 require_once '../src/controllers/TipoDocumentoController.php';
 
 $controlador = new TipoDocumentoController();

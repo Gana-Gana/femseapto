@@ -61,7 +61,7 @@ class SolicitudRetiroAhorro {
                 devolucion_caja,
                 observaciones,
                 continuar_ahorro,
-                DATE_FORMAT(CONVERT_TZ(fecha_solicitud, '+00:00', '-05:00'), '%d/%m/%Y') AS fecha_solicitud
+                DATE_FORMAT(fecha_solicitud, '%d/%m/%Y') AS fecha_solicitud
             FROM solicitudes_retiro_ahorro
             WHERE id = ?");
         $query->bind_param("i", $id);
@@ -89,7 +89,7 @@ class SolicitudRetiroAhorro {
                 devolucion_caja,
                 observaciones,
                 continuar_ahorro,
-                DATE_FORMAT(CONVERT_TZ(fecha_solicitud, '+00:00', '-05:00'), '%d/%m/%Y') AS fecha_solicitud
+                DATE_FORMAT(fecha_solicitud, '%d/%m/%Y') AS fecha_solicitud
             FROM solicitudes_retiro_ahorro
             WHERE id_usuario = ?
             ORDER BY fecha_solicitud
@@ -122,7 +122,7 @@ class SolicitudRetiroAhorro {
                     devolucion_caja,
                     observaciones,
                     continuar_ahorro,
-                    DATE_FORMAT(CONVERT_TZ(fecha_solicitud, '+00:00', '-05:00'), '%d/%m/%Y') AS fecha_solicitud
+                    DATE_FORMAT(fecha_solicitud, '%d/%m/%Y') AS fecha_solicitud
                 FROM solicitudes_retiro_ahorro";
         $result = $db->query($query);
         $solicitudes = [];
@@ -148,7 +148,7 @@ class SolicitudRetiroAhorro {
                     observaciones,
                     continuar_ahorro,
                     fecha_solicitud AS fecha_sin_formatear,
-                    DATE_FORMAT(CONVERT_TZ(fecha_solicitud, '+00:00', '-05:00'), '%d/%m/%Y') AS fecha_solicitud
+                    DATE_FORMAT(fecha_solicitud, '%d/%m/%Y') AS fecha_solicitud
                 FROM solicitudes_retiro_ahorro
                 $searchQuery
                 ORDER BY fecha_sin_formatear DESC

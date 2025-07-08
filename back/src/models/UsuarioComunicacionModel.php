@@ -62,8 +62,8 @@ class UsuarioComunicacion {
                 id,
                 id_usuario,
                 id_medio_comunicacion,
-                CONVERT_TZ(creado_el, '+00:00', '-05:00') AS creado_el,
-                CONVERT_TZ(actualizado_el, '+00:00', '-05:00') AS actualizado_el
+                creado_el,
+                actualizado_el
             FROM usuarios_comunicacion
             WHERE id_usuario = ?");
         $query->bind_param("i", $idUsuario);

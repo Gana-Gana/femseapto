@@ -59,7 +59,7 @@ class SolicitudCredito {
                 periocidad_pago,
                 tasa_interes,
                 ruta_documento,
-                CONVERT_TZ(fecha_solicitud, '+00:00', '-05:00') AS fecha_solicitud 
+                fecha_solicitud 
             FROM solicitudes_credito
             WHERE id = ?");
         $query->bind_param("i", $id);
@@ -88,7 +88,7 @@ class SolicitudCredito {
                 periocidad_pago,
                 tasa_interes,
                 ruta_documento,
-                CONVERT_TZ(fecha_solicitud, '+00:00', '-05:00') AS fecha_solicitud 
+                fecha_solicitud 
             FROM solicitudes_credito
             WHERE id_usuario = ?");
         $query->bind_param("i", $idUsuario);
@@ -120,7 +120,7 @@ class SolicitudCredito {
                     periocidad_pago,
                     tasa_interes,
                     ruta_documento,
-                    CONVERT_TZ(fecha_solicitud, '+00:00', '-05:00') AS fecha_solicitud
+                    fecha_solicitud
                 FROM solicitudes_credito";
         $result = $db->query($query);
         $solicitudes = [];
@@ -153,7 +153,7 @@ class SolicitudCredito {
                 sc.periocidad_pago,
                 sc.tasa_interes,
                 sc.ruta_documento,
-                CONVERT_TZ(sc.fecha_solicitud, '+00:00', '-05:00') AS fecha_solicitud,
+                sc.fecha_solicitud AS fecha_solicitud,
                 u.primer_nombre,
                 u.segundo_nombre,
                 u.primer_apellido,
@@ -189,7 +189,7 @@ class SolicitudCredito {
             }
             $fechaSQL = $fechaConvertida->format('Y-m-d');
     
-            $whereConditions[] = "DATE(CONVERT_TZ(sc.fecha_solicitud, '+00:00', '-05:00')) = ?";
+            $whereConditions[] = "DATE(sc.fecha_solicitud) = ?";
             $params[] = $fechaSQL;
             $types .= "s";
         }
@@ -220,19 +220,22 @@ class SolicitudCredito {
         $solicitudes = [];
     
         while ($row = $result->fetch_assoc()) {
-            $solicitudes[] = new SolicitudCredito(
-                $row['id'],
-                $row['id_usuario'],
-                $row['monto_solicitado'],
-                $row['plazo_quincenal'],
-                $row['valor_cuota_quincenal'],
-                $row['id_linea_credito'],
-                $row['reestructurado'],
-                $row['periocidad_pago'],
-                $row['tasa_interes'],
-                $row['ruta_documento'],
-                $row['fecha_solicitud']
-            );
+            $solicitudes[] = [
+                'id' => $row['id'],
+                'id_usuario' => $row['id_usuario'],
+                'montoSolicitado' => $row['monto_solicitado'],
+                'plazoQuincenal' => $row['plazo_quincenal'],
+                'valorCuotaQuincenal' => $row['valor_cuota_quincenal'],
+                'idLineaCredito' => $row['id_linea_credito'],
+                'reestructurado' => $row['reestructurado'],
+                'periocidadPago' => $row['periocidad_pago'],
+                'tasaInteres' => $row['tasa_interes'],
+                'rutaDocumento' => $row['ruta_documento'],
+                'fechaSolicitud' => $row['fecha_solicitud'],
+                'numeroDocumento' => $row['numero_documento'],
+                'nombreAsociado' => trim("{$row['primer_nombre']} {$row['segundo_nombre']} {$row['primer_apellido']} {$row['segundo_apellido']}"),
+                'nombreLineaCredito' => $row['nombre']
+            ];
         }
     
         $countStmt = $db->prepare($finalCountQuery);
@@ -290,7 +293,7 @@ class SolicitudCredito {
                 periocidad_pago,
                 tasa_interes,
                 ruta_documento,
-                CONVERT_TZ(fecha_solicitud, '+00:00', '-05:00') AS fecha_solicitud
+                fecha_solicitud
             FROM solicitudes_credito
             WHERE fecha_solicitud
             BETWEEN ?

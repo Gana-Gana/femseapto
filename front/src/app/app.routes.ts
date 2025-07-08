@@ -28,6 +28,9 @@ import { LoginRedirectGuard } from './guards/login-redirect.guard';
 import { AdminGuard } from './guards/admin.guard';
 import { UserGuard } from './guards/user.guard';
 import { ExecutiveGuard } from './guards/executive.guard';
+import { SocialOversightGuard } from './guards/social-oversight.guard';
+import { CommitteeGuard } from './guards/committee.guard';
+
 
 import { PublicComponent } from './components/public/public.component';
 import { PrivateComponent } from './components/private/private.component';
@@ -36,9 +39,13 @@ import { ManageUsersComponent } from './components/private/admin/components/mana
 import { ManageUserComponent } from './components/private/admin/components/manage-users/components/manage-user/manage-user.component';
 import { ManageAdminComponent } from './components/private/admin/components/manage-users/components/manage-admin/manage-admin.component';
 import { ManageExecutiveComponent } from './components/private/admin/components/manage-users/components/manage-executive/manage-executive.component';
+import { ManageSocialOversightComponent } from './components/private/admin/components/manage-users/components/manage-social-oversight/manage-social-oversight/manage-social-oversight.component';
+import { ManageCommitteeComponent } from './components/private/admin/components/manage-users/components/manage-committee/manage-committee/manage-committee.component';
 import { FileUploadComponent } from './components/private/admin/components/file-upload/file-upload.component';
 import { FileListComponent } from './components/private/admin/components/file-list/file-list.component';
 import { ExecutiveWelcomeComponent } from './components/private/executive/executive-welcome/executive-welcome.component';
+import { SocialOversightWelcomeComponent } from './components/private/social-oversight/social-oversight-welcome/social-oversight-welcome/social-oversight-welcome.component';
+import { CommitteeWelcomeComponent } from './components/private/committee/committee-welcome/committee-welcome.component';
 import { ExecutiveReportsComponent } from './components/private/executive/components/executive-reports/executive-reports.component';
 import { NotFoundComponent } from './components/public/not-found/not-found.component';
 import { InfoRequestCreditComponent } from './components/private/user/request/request-credit/info-request-credit/info-request-credit.component';
@@ -49,7 +56,9 @@ import { UserSettingsComponent } from './components/private/user/user-settings/u
 import { AgreementTypesListComponent } from './components/public/agreements/components/agreement-types-list/agreement-types-list.component';
 import { UsersReportComponent } from './components/private/admin/users-report/users-report.component';
 import { RequiredSavingBalanceComponent } from './components/private/user/required-saving-balance/required-saving-balance.component';
-
+import { AllowanceRequestsComponent } from './components/private/admin/components/allowance-requests/allowance-requests.component';
+import { InfoRequestAllowanceComponent } from './components/private/user/request/request-allowance/info-request-allowance/info-request-allowance.component';
+import { RequestAllowanceComponent } from './components/private/user/request/request-allowance/request-allowance.component';
 export const routes: Routes = [
     { path: '', component: PublicComponent,
         children: [
@@ -94,7 +103,8 @@ export const routes: Routes = [
                             { path: 'credit', component: InfoRequestCreditComponent },
                             { path: 'saving', component: RequestSavingComponent },
                             { path: 'saving-withdrawal', component: RequestSavingWithdrawalComponent },
-                            { path: 'saving-history', component: SavingRequestHistoryComponent }
+                            { path: 'saving-history', component: SavingRequestHistoryComponent },
+                            { path: 'allowance', component: RequestAllowanceComponent }, 
                         ], 
                     },    
                 ]
@@ -105,11 +115,14 @@ export const routes: Routes = [
                     { path: 'credits', component: CreditRequestsComponent },
                     { path: 'savings', component: SavingRequestsComponent },
                     { path: 'savings-withdrawals', component: SavingWithdrawalRequestComponent },
+                    { path: 'allowances', component: AllowanceRequestsComponent },
                     { path: 'manage', component: ManageUsersComponent,
                         children: [
                             { path: 'administrator', component: ManageAdminComponent },
                             { path: 'user', component: ManageUserComponent },
-                            { path: 'executive', component: ManageExecutiveComponent }
+                            { path: 'executive', component: ManageExecutiveComponent },
+                            { path: 'social-oversight', component: ManageSocialOversightComponent },
+                            { path: 'committee', component: ManageCommitteeComponent }
                         ]
                     },
                     { path: 'upload', component: FileUploadComponent },
@@ -122,6 +135,18 @@ export const routes: Routes = [
                 children: [
                     { path: '', component: ExecutiveWelcomeComponent},
                     { path: 'reports', component:  ExecutiveReportsComponent}
+                ]
+            },
+            { path: 'social-oversight',  canActivate: [SocialOversightGuard],
+                children: [
+                    { path: '', component: SocialOversightWelcomeComponent},
+                    { path: 'allowances', component: AllowanceRequestsComponent }
+                ]
+            },
+            { path: 'committee',  canActivate: [CommitteeGuard],
+                children: [
+                    { path: '', component: CommitteeWelcomeComponent},
+                    { path: 'allowances', component: AllowanceRequestsComponent }
                 ]
             }
         ]

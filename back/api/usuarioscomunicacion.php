@@ -8,11 +8,11 @@ $token = $_COOKIE['auth_token'] ?? '';
 
 $decodedToken = verifyJWTToken($token, $key);
 
-// if ($decodedToken === null) {
-//     http_response_code(401);
-//     echo json_encode(["message" => "Token no válido o no proporcionado."]);
-//     exit();
-// }
+if ($decodedToken === null) {
+    http_response_code(401);
+    echo json_encode(["message" => "Token no válido o no proporcionado."]);
+    exit();
+}
 
 $controlador = new UsuarioComunicacionController();
 

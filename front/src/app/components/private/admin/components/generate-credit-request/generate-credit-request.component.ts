@@ -115,246 +115,136 @@ export class GenerateCreditRequestComponent implements OnInit {
     private creditRequestService: RequestCreditService
   ) {}
 
-  ngOnInit() {
-    if(this.idSolicitudCredito) {
-      this.creditRequestService
-        .getById(this.idSolicitudCredito)
-        .subscribe({
-          next: (request) => {
-            this.montoSolicitado = request.montoSolicitado;
-            this.plazoQuincenal = request.plazoQuincenal;
-            this.valorCuotaQuincenal = request.valorCuotaQuincenal;
-            this.fechaSolicitud = request.fechaSolicitud;
-            this.lineaCredito = Number(request.idLineaCredito);
-            this.reestructurado = request.reestructurado;
-            this.periocidadPago = request.periocidadPago;
-            this.tasaInteres = request.tasaInteres;
-            
-            if (this.lineaCredito) {
-              this.lineasCreditoService
-                .getNameById(Number(this.lineaCredito))
-                .subscribe({
-                  next: (nombre) => {
-                    this.lineaCreditoNombre = nombre;
-                  },
-                  error: (err) => {
-                    console.error(
-                      'Error al obtener el nombre de la línea de crédito',
-                      err
-                    );
-                  },
-                });
-            }
-          },
-          error: (err) => {
-            console.error(
-              'Error al obtener el nombre de la línea de crédito',
-              err
-            );
-          },
-        });
+  ngOnInit() {}
+
+  async loadData() {
+    if (this.idSolicitudCredito) {
+      const credit = await firstValueFrom(
+        this.creditRequestService.getById(this.idSolicitudCredito)
+      );
+      this.montoSolicitado = credit.montoSolicitado;
+      this.plazoQuincenal = credit.plazoQuincenal;
+      this.valorCuotaQuincenal = credit.valorCuotaQuincenal;
+      this.fechaSolicitud = credit.fechaSolicitud;
+      this.lineaCredito = Number(credit.idLineaCredito);
+      this.reestructurado = credit.reestructurado;
+      this.periocidadPago = credit.periocidadPago;
+      this.tasaInteres = credit.tasaInteres;
+
+      if (this.lineaCredito) {
+        const lineaNombre = await firstValueFrom(
+          this.lineasCreditoService.getNameById(this.lineaCredito)
+        );
+        this.lineaCreditoNombre = lineaNombre;
+      }
     }
 
-    if (this.userId !== null) {
-      this.userService.getById(this.userId).subscribe({
-        next: (user) => {
-          this.nombreAsociado = `${user.primerNombre || ''} ${
-            user.segundoNombre || ''
-          } ${user.primerApellido || ''} ${user.segundoApellido || ''}`.trim();
-          this.numeroDocumento = Number(user.numeroDocumento);
-        },
-        error: (err) => {
-          console.error('Error al obtener el nombre del usuario', err);
-        },
-      });
+    if (this.userId) {
+      const user = await firstValueFrom(
+        this.userService.getById(this.userId)
+      );
+      this.nombreAsociado = `${user.primerNombre || ''} ${user.segundoNombre || ''} ${user.primerApellido || ''} ${user.segundoApellido || ''}`.trim();
+      this.numeroDocumento = Number(user.numeroDocumento);
 
-      this.naturalPersonService.getByUserId(this.userId).subscribe({
-        next: (person) => {
-          this.ciudadExpedicionDocumento = person.mpioExpDoc;
-          this.fechaExpedicionDocumento = person.fechaExpDoc;
-          this.ciudadNacimiento = person.mpioNacimiento;
-          this.fechaNacimiento = person.fechaNacimiento;
-          this.genero = person.idGenero;
-          this.personasACargo = person.personasACargo;
-          this.estadoCivil = person.idEstadoCivil;
-          this.direccionResidencia = person.direccionResidencia;
-          this.municipioResidencia = person.mpioResidencia;
-          this.estrato = person.estrato;
-          this.email = person.correoElectronico;
-          this.jefeInmediato = person.jefeInmediato;
-          this.dependencia = `Dependencia: ${ person.dependenciaEmpresa || '' }`.trim();
-          this.tipoContrato = person.idTipoContrato;
-          this.nivelEducativo = person.idNivelEducativo;
-          this.tipoVivienda = person.idTipoVivienda;
-          this.telefono = person.telefono;
-          this.celular = person.celular;
-          this.telefonoOficina = person.telefonoOficina;
-          this.permanenciaVivienda = person.antigVivienda;
-          this.antiguedadEmpresa = person.antigEmpresa;
-          this.salidaVacaciones = person.mesSaleVacaciones;
-          this.headOfFamily = person.cabezaFamilia || '';
+      const person = await firstValueFrom(
+        this.naturalPersonService.getByUserId(this.userId)
+      );
+      this.ciudadExpedicionDocumento = person.mpioExpDoc;
+      this.fechaExpedicionDocumento = person.fechaExpDoc;
+      this.ciudadNacimiento = person.mpioNacimiento;
+      this.fechaNacimiento = person.fechaNacimiento;
+      this.genero = person.idGenero;
+      this.personasACargo = person.personasACargo;
+      this.estadoCivil = person.idEstadoCivil;
+      this.direccionResidencia = person.direccionResidencia;
+      this.municipioResidencia = person.mpioResidencia;
+      this.estrato = person.estrato;
+      this.email = person.correoElectronico;
+      this.jefeInmediato = person.jefeInmediato;
+      this.dependencia = (`Dependencia: ${person.dependenciaEmpresa || ''}`).trim();
+      this.tipoContrato = person.idTipoContrato;
+      this.nivelEducativo = person.idNivelEducativo;
+      this.tipoVivienda = person.idTipoVivienda;
+      this.telefono = person.telefono;
+      this.celular = person.celular;
+      this.telefonoOficina = person.telefonoOficina;
+      this.permanenciaVivienda = person.antigVivienda;
+      this.antiguedadEmpresa = person.antigEmpresa;
+      this.salidaVacaciones = person.mesSaleVacaciones;
+      this.headOfFamily = person.cabezaFamilia || '';
 
-          const departamentoId = this.municipioResidencia.slice(0, 2);
-          forkJoin([
-            this.citiesService.getById(this.ciudadExpedicionDocumento),
-            this.citiesService.getById(this.ciudadNacimiento),
-            this.citiesService.getById(this.municipioResidencia),
-            this.departmentsService.getAll()
-          ]).subscribe({
-            next: ([
-              expCity,
-              birthCity,
-              residenceCity,
-              departments
-            ]) => {
-              this.ciudadExpedicionDocumento = expCity.nombre;
-              this.ciudadNacimiento = birthCity.nombre;
-              this.municipioResidencia = residenceCity.nombre;
-              const departamento = departments.find(
-                (d) => d.id === departamentoId
-              );
-              this.departamentoResidencia = departamento
-                ? departamento.nombre
-                : '';
-            },
-            error: (err) => {
-              console.error(
-                'Error al obtener las ciudades y departamentos',
-                err
-              );
-            },
-          });
-        },
-        error: (err) => {
-          console.error(
-            'Error al obtener los datos de la persona natural',
-            err
-          );
-        },
-      });
+      const departamentoId = this.municipioResidencia.slice(0, 2);
+      const [expCity, birthCity, residenceCity, departments] = await firstValueFrom(
+        forkJoin([
+          this.citiesService.getById(this.ciudadExpedicionDocumento),
+          this.citiesService.getById(this.ciudadNacimiento),
+          this.citiesService.getById(this.municipioResidencia),
+          this.departmentsService.getAll()
+        ])
+      );
+      this.ciudadExpedicionDocumento = expCity.nombre;
+      this.ciudadNacimiento = birthCity.nombre;
+      this.municipioResidencia = residenceCity.nombre;
+      const departamento = departments.find((d: any) => d.id === departamentoId);
+      this.departamentoResidencia = departamento ? departamento.nombre : '';
 
-      this.familyService.getByUserId(this.userId).subscribe({
-        next: (family) => {
-          const conyuge = family.find(
-            (f) => f.idParentesco === 5 || f.idParentesco === 6
-          );
-          if (conyuge) {
-            this.nombreConyuge = conyuge.nombreCompleto;
-            this.cedulaLugarExpConyuge = conyuge.numeroDocumento;
-            this.telefonoConyuge = `Telefono Conyuge: ${conyuge.celular}`;
+      const familyData = await firstValueFrom(
+        this.familyService.getByUserId(this.userId)
+      );
+      const conyuge = familyData.find((f: any) => f.idParentesco === 5 || f.idParentesco === 6);
+      if (conyuge) {
+        this.nombreConyuge = conyuge.nombreCompleto;
+        this.cedulaLugarExpConyuge = conyuge.numeroDocumento;
+        this.telefonoConyuge = `Telefono Conyuge: ${conyuge.celular}`;
+        const expCityConyuge = await firstValueFrom(
+          this.citiesService.getById(conyuge.idMpioExpDoc)
+        );
+        this.cedulaLugarExpConyuge = `${this.cedulaLugarExpConyuge} ${expCityConyuge.nombre}`;
+      }
 
-            forkJoin([
-              this.citiesService.getById(conyuge.idMpioExpDoc),
-            ]).subscribe({
-              next: ([
-                expCity
-              ]) => {
-                this.cedulaLugarExpConyuge = this.cedulaLugarExpConyuge + " " + expCity.nombre;
-              },
-              error: (err) => {
-                console.error(
-                  'Error al obtener las ciudades y departamentos',
-                  err
-                );
-              },
-            });
-          }    
-        },
-        error: (err) => {
-          console.error(
-            'Error al obtener los datos del cónyuge',
-            err
-          );
-        },
-      });
+      const financialInfo = await firstValueFrom(
+        this.financialInfoService.getByUserId(this.userId)
+      );
+      this.nombreBanco = financialInfo.nombreBanco;
+      this.idTipoCuentaBanco = financialInfo.idTipoCuentaBanc;
+      this.numCuentaBanco = financialInfo.numeroCuentaBanc;
+      this.salarioMensual = financialInfo.ingresosMensuales;
+      this.primaProductividad = financialInfo.primaProductividad;
+      this.otrosIngresos = financialInfo.otrosIngresosMensuales;
+      this.conceptoOtrosIngresos = financialInfo.conceptoOtrosIngresosMens;
+      this.egresosMensuales = financialInfo.egresosMensuales;
+      this.obligFinancieras = financialInfo.obligacionFinanciera;
+      this.otrosEgresos = financialInfo.otrosEgresosMensuales;
+      this.totalActivos = financialInfo.totalActivos;
+      this.totalPasivos = financialInfo.totalPasivos;
 
-      this.financialInfoService.getByUserId(this.userId).subscribe({
-        next: (financialInfo) => {
-          this.nombreBanco = financialInfo.nombreBanco;
-          this.idTipoCuentaBanco = financialInfo.idTipoCuentaBanc;
-          this.numCuentaBanco = financialInfo.numeroCuentaBanc;
-          this.salarioMensual = financialInfo.ingresosMensuales;
-          this.primaProductividad = financialInfo.primaProductividad;
-          this.otrosIngresos = financialInfo.otrosIngresosMensuales;
-          this.conceptoOtrosIngresos = financialInfo.conceptoOtrosIngresosMens;
-          this.egresosMensuales = financialInfo.egresosMensuales;
-          this.obligFinancieras = financialInfo.obligacionFinanciera;
-          this.otrosEgresos = financialInfo.otrosEgresosMensuales;
-          this.totalActivos = financialInfo.totalActivos;
-          this.totalPasivos = financialInfo.totalPasivos;
-        },
-        error: (err) => {
-          console.error(
-            'Error al obtener los datos de información financiera',
-            err
-          );
-        },
-      });
-
-      this.recommendationService.getByUserId(this.userId).subscribe({
-        next: (recommendations) => {
-          const famRecommendation = recommendations.find(
-            (f) => f.idTipoReferencia === 4
-          );
-          if (famRecommendation) {
-            this.nombreFamReferencia = famRecommendation.nombreRazonSocial;
-            this.parentescoFamReferencia = famRecommendation.parentesco;
-            this.correoFamReferencia = famRecommendation.correoElectronico;
-            this.direccionFamReferencia = famRecommendation.direccion;
-            this.telFamReferencia = famRecommendation.telefono;
-
-            forkJoin([
-              this.citiesService.getById(famRecommendation.idMunicipio),
-            ]).subscribe({
-              next: ([
-                famCity
-              ]) => {
-                this.ciudadFamReferencia = famCity.nombre;
-              },
-              error: (err) => {
-                console.error(
-                  'Error al obtener las ciudades y departamentos',
-                  err
-                );
-              },
-            });
-          }
-          
-          // Personal recommendation
-          const persRecommendation = recommendations.find(
-            (f) => f.idTipoReferencia === 3
-          );
-          if (persRecommendation) {
-            this.nombrePersReferencia = persRecommendation.nombreRazonSocial;
-            this.parentescoPersReferencia = persRecommendation.parentesco;
-            this.correoPersReferencia = persRecommendation.correoElectronico;
-            this.direccionPersReferencia = persRecommendation.direccion;
-            this.telPersReferencia = persRecommendation.telefono;
-
-            forkJoin([
-              this.citiesService.getById(persRecommendation.idMunicipio),
-            ]).subscribe({
-              next: ([
-                persCity
-              ]) => {
-                this.ciudadPersReferencia = persCity.nombre;
-              },
-              error: (err) => {
-                console.error(
-                  'Error al obtener las ciudades y departamentos',
-                  err
-                );
-              },
-            });
-          }
-        },
-        error: (err) => {
-          console.error(
-            'Error al obtener los datos de la referencia personal',
-            err
-          );
-        },
-      });
+      const recommendations = await firstValueFrom(
+        this.recommendationService.getByUserId(this.userId)
+      );
+      const famRecommendation = recommendations.find((f: any) => f.idTipoReferencia === 4);
+      if (famRecommendation) {
+        this.nombreFamReferencia = famRecommendation.nombreRazonSocial;
+        this.parentescoFamReferencia = famRecommendation.parentesco;
+        this.correoFamReferencia = famRecommendation.correoElectronico;
+        this.direccionFamReferencia = famRecommendation.direccion;
+        this.telFamReferencia = famRecommendation.telefono;
+        const famCity = await firstValueFrom(
+          this.citiesService.getById(famRecommendation.idMunicipio)
+        );
+        this.ciudadFamReferencia = famCity.nombre;
+      }
+      const persRecommendation = recommendations.find((f: any) => f.idTipoReferencia === 3);
+      if (persRecommendation) {
+        this.nombrePersReferencia = persRecommendation.nombreRazonSocial;
+        this.parentescoPersReferencia = persRecommendation.parentesco;
+        this.correoPersReferencia = persRecommendation.correoElectronico;
+        this.direccionPersReferencia = persRecommendation.direccion;
+        this.telPersReferencia = persRecommendation.telefono;
+        const persCity = await firstValueFrom(
+          this.citiesService.getById(persRecommendation.idMunicipio)
+        );
+        this.ciudadPersReferencia = persCity.nombre;
+      }
     }
   }
 
@@ -591,10 +481,14 @@ export class GenerateCreditRequestComponent implements OnInit {
 
   async onGenerateClick() {
     this.isLoading = true;
-    setTimeout(async () => {
+    try {
+      await this.loadData();
       await this.generateExcel();
       await this.creditRequestService.downloadCreditRequestPdf(this.idSolicitudCredito, this.numeroDocumento);
+    } catch (error) {
+      console.error('Error en la generación:', error);
+    } finally {
       this.isLoading = false;
-    }, 10000);
+    }
   }
 }

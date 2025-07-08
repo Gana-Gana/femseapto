@@ -1,0 +1,120 @@
+<div class="container mt-4">
+  <p-toast></p-toast>
+  <app-info-request-allowance></app-info-request-allowance>
+
+  <div class="row">
+    <div class="col-12">
+      <h5 class="mt-4 mb-3">
+        <i class="bi bi-heart-fill text-success me-2"></i>Solicitud de Auxilio
+      </h5>
+
+      <div
+        class="alert alert-warning"
+        role="alert"
+        *ngIf="displayMessageNatPerson"
+      >
+        <i class="bi bi-exclamation-triangle-fill me-2"></i>
+        <strong>{{ displayMessageNatPerson }}</strong>. De no hacerlo, no podrá completar la solicitud de auxilio, ya que esta información es fundamental para el estudio de su solicitud.
+      </div>
+
+      <div class="card shadow-sm mb-5">
+        <div class="card-body p-4">
+          <form
+            class="row g-4"
+            [formGroup]="allowanceForm"
+            (ngSubmit)="onSubmit()"
+            [attr.disabled]="isAdditionalDisabled ? true : null"
+          >
+            
+            <div class="col-12">
+              <label for="idTipoAuxilio" class="form-label fw-semibold">
+                <i class="bi bi-list-ul text-primary me-2"></i>Auxilios Disponibles
+              </label>
+              <select
+                class="form-select"
+                formControlName="idTipoAuxilio"
+                id="idTipoAuxilio"
+                (change)="onAllowanceTypeChange()"
+              >
+                <option value="" disabled selected>
+                  Seleccione un tipo de auxilio
+                </option>
+                <option *ngFor="let type of allowanceTypes" [value]="type.id">
+                  {{ type.nombre }}
+                </option>
+              </select>
+            </div>
+
+            <div class="mb-3">
+              <label for="descripcion" class="form-label fw-semibold">
+                <i class="bi bi-chat-text text-info me-2"></i>Descripción de la solicitud
+              </label>
+              <textarea
+                class="form-control"
+                placeholder="Indique los motivos por los cuales solicita el auxilio"
+                formControlName="descripcion"
+                id="descripcion"
+                style="height: 150px"
+              ></textarea>
+            </div>
+
+            <div class="col-12">
+              <label for="pdfFile" class="form-label fw-semibold">
+                <i class="bi bi-file-earmark-pdf text-danger me-2"></i>Subir copia de documento de identidad en archivo PDF
+              </label>
+              <input
+                type="file"
+                multiple
+                (change)="onFileChange($event)"
+                class="form-control"
+                accept="application/pdf"
+                id="pdfFile"
+              />
+              <div class="form-text">
+                <i class="bi bi-info-circle me-1"></i>
+              </div>
+              <div *ngIf="allowanceForm.controls['adjuntosAuxilio'].invalid && allowanceForm.controls['adjuntosAuxilio'].touched">
+                <small class="text-danger">
+                  <i class="bi bi-exclamation-circle me-1"></i>La copia de documento de identidad es obligatoria
+                </small>
+              </div>
+            </div>
+
+            <div class="col-12" *ngFor="let file of additionalFiles; let i = index">
+              <label class="form-label fw-semibold">
+                <i class="bi bi-paperclip text-warning me-2"></i>Subir {{ file.label }} (PDF)
+              </label>
+              <input
+                type="file"
+                class="form-control"
+                accept="application/pdf"
+                (change)="onAdditionalFileChange($event, i)"
+              />
+              <div class="form-text">
+                <i class="bi bi-info-circle me-1"></i>Archivo requerido para el auxilio seleccionado
+              </div>
+            </div>
+
+            <div class="col-12 mt-4">
+              <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                <button
+                  type="submit"
+                  class="btn btn-success px-3"
+                  [disabled]="allowanceForm.invalid || isAdditionalDisabled || isSubmitting"
+                >
+                  <span *ngIf="!isSubmitting">
+                    <i class="bi bi-send me-2"></i>Enviar Solicitud
+                  </span>
+                  <span *ngIf="isSubmitting">
+                    <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                    Enviando...
+                  </span>
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

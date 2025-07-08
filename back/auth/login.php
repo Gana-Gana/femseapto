@@ -1,6 +1,8 @@
 <?php
+require_once '../config/cors.php';
 require_once '../vendor/autoload.php';
-require_once '../src/models/UsuarioModel.php'; 
+require_once '../src/models/UsuarioModel.php';
+require_once '../src/controllers/RegistroInicioSesionController.php';
 require_once '../config/config.php';
 require_once 'verifyToken.php';
 
@@ -10,17 +12,8 @@ use Firebase\JWT\Key;
 $dotenv = Dotenv\Dotenv::createImmutable(__DIR__ . '/..');
 $dotenv->load();
 
-header('Content-Type: application/json');
-
-// Permitir solicitudes desde cualquier origen
-header("Access-Control-Allow-Origin: *");
-header("Access-Control-Allow-Credentials: true");
-header("Access-Control-Allow-Methods: POST, OPTIONS");
-header("Access-Control-Allow-Headers: Content-Type");
-
 $key = $_ENV['JWT_SECRET_KEY'];
 
-// Chequear si la solicitud es POST
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $data = json_decode(file_get_contents("php://input"), true);
 
@@ -28,6 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $contrasenia = $data['contrasenia'] ?? '';
 
     $usuarioObj = Usuario::buscarPorUsuario($usuario);
+    $registroController = new RegistroInicioSesionController();
 
     if ($usuarioObj && password_verify($contrasenia, $usuarioObj->contrasenia)) {
         if ($usuarioObj->activo) {
@@ -42,7 +36,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             ];
 
             $jwt = JWT::encode($payload, $key, 'HS256');
-            setcookie('auth_token', $jwt, $expirationTime, '/', '', false, true);  // Secure en false solo para desarrollo local
+            setcookie('auth_token', $jwt, $expirationTime, '/', '', false, true);
+
+            $registroController->registrarInicioSesion([
+                'idUsuario' => $usuarioObj->id,
+                'inicioExitoso' => 1
+            ]);
 
             $response = [
                 'success' => true,
@@ -51,12 +50,22 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 'primer_ingreso' => $usuarioObj->primerIngreso
             ];
         } else {
+            $registroController->registrarInicioSesion([
+                'idUsuario' => $usuarioObj->id,
+                'inicioExitoso' => 0
+            ]);
+
             $response = [
                 'success' => false,
                 'message' => 'Cuenta inactiva. Contacte al administrador.'
             ];
         }
     } else {
+        $registroController->registrarInicioSesion([
+            'idUsuario' => $usuarioObj->id,
+            'inicioExitoso' => 0
+        ]);
+
         $response = [
             'success' => false,
             'message' => 'Usuario o contraseña incorrecta.'

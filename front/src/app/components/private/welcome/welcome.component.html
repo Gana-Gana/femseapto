@@ -3,44 +3,63 @@
     <p class="username lead">{{ primerNombre }} {{ primerApellido }}</p>
 </div>
 
-<div class="container mt-2 content-animate">
-    <div class="row">
+<div class="container mt-4 content-animate">
+    <div class="row g-4">
 
         <!-- Card de Servicios de Crédito -->
-        <div class="col-lg-6 col-md-6 col-sm-6 col-12 mb-3">
+        <div class="col-lg-6 col-md-6 col-sm-12">
             <div class="card shadow text-center h-100">
-                <h4 class="card-header">
+                <h4 class="card-header bg-success text-white">
+                    <i class="bi bi-credit-card-2-front me-2"></i>
                     Servicios de Crédito
                 </h4>
-                <div class="card-body">
-                    <h5 class="card-title">Conoce los Servicios de Crédito</h5>
-                    <a class="btn btn-success me-2 mb-1" routerLink="/auth/user/request/credit">Solicitar crédito</a>
-                    <a class="btn btn-success me-2 mb-1" routerLink="/auth/user/credits/balance">Consultar saldos de crédito</a>
-                    <!-- <a class="btn btn-primary me-2 mb-1" routerLink="/auth/user/credits">Mi historial</a> -->
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title mb-3">Conoce los Servicios de Crédito</h5>
+                    <div class="mt-auto">
+                        <div class="d-grid gap-2">
+                            <a class="btn btn-success" routerLink="/auth/user/request/credit">
+                                <i class="bi bi-plus-circle me-2"></i>Solicitar crédito
+                            </a>
+                            <a class="btn btn-success" routerLink="/auth/user/credits/balance">
+                                <i class="bi bi-search me-2"></i>Consultar saldos de crédito
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
         <!-- Card de Servicios de Ahorro -->
-        <div class="col-lg-6 col-md-6 col-sm-6 col-12 mb-3">
+        <div class="col-lg-6 col-md-6 col-sm-12">
             <div class="card shadow text-center h-100">
-                <h4 class="card-header">
+                <h4 class="card-header bg-success text-white">
+                    <i class="bi bi-piggy-bank me-2"></i>
                     Servicios de Ahorro
                 </h4>
-                <div class="card-body ">
-                    <h5 class="card-title">Conoce los Servicios de Ahorro</h5>
-                    <div class="row">
-                        <div class="col-md-6">
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title mb-3">Conoce los Servicios de Ahorro</h5>
+                    <div class="row mt-auto">
+                        <div class="col-6">
                             <div class="d-grid gap-2">
-                                <a class="btn btn-success" routerLink="/auth/user/request/saving">Solicitar nuevo ahorro</a>
-                                <a class="btn btn-success" routerLink="/auth/user/request/saving-withdrawal">Solicitar retiro de ahorros</a>
-                                <a class="btn btn-success" routerLink="/auth/user/request/saving-history">Historial de solicitudes</a>
+                                <a class="btn btn-success btn-sm" routerLink="/auth/user/request/saving">
+                                    <i class="bi bi-plus-lg me-1"></i>Solicitar ahorro
+                                </a>
+                                <a class="btn btn-success btn-sm" routerLink="/auth/user/request/saving-withdrawal">
+                                    <i class="bi bi-dash-circle me-1"></i>Solicitar retiro
+                                </a>
+                                <a class="btn btn-success btn-sm" routerLink="/auth/user/request/saving-history">
+                                    <i class="bi bi-clock-history me-1"></i>Historial
+                                </a>
                             </div>    
                         </div>
-                        <div class="col-md-6 mt-2">
+                        <div class="col-6">
                             <div class="d-grid gap-2">
-                                <a class="btn btn-success" routerLink="/auth/user/savings/balance">Consultar saldo de ahorros</a>
-                                <a class="btn btn-success" routerLink="/auth/user/savings/required-balance">Consultar saldo de ahorros obligatorios</a>
+                                <a class="btn btn-success btn-sm" routerLink="/auth/user/savings/balance">
+                                    <i class="bi bi-wallet2 me-1"></i>Saldo ahorros
+                                </a>
+                                <a class="btn btn-success btn-sm" routerLink="/auth/user/savings/required-balance">
+                                    <i class="bi bi-wallet-fill me-1"></i>Saldo obligatorios
+                                </a>
                             </div>           
                         </div>
                     </div>
@@ -48,30 +67,45 @@
             </div>
         </div>
 
-        <!-- Card de Mi Perfil -->
-        <div class="col-lg-6 col-md-6 col-sm-6 col-12 mb-3">
+        <!-- Card de Servicios de Auxilios -->
+        <div class="col-lg-6 col-md-6 col-sm-12">
             <div class="card shadow text-center h-100">
-                <h4 class="card-header">
-                    Mi Perfil
+                <h4 class="card-header bg-success text-white">
+                    <i class="bi bi-heart-fill me-2"></i>
+                    Servicios de Auxilios
                 </h4>
-                <div class="card-body">
-                    <h5 class="card-title">Datos Personales</h5>
-                    <a routerLink="/auth/user/information" class="btn btn-success">Actualizar datos generales</a>
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title mb-3">Conoce los Servicios de Auxilios</h5>
+                    <div class="mt-auto">
+                        <div class="d-grid gap-2">
+                            <a class="btn btn-success" routerLink="/auth/user/request/allowance">
+                                <i class="bi bi-plus-circle me-2"></i>Solicitar auxilio
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
 
-        
-
-        <!-- Card de Ajustes -->
-        <div class="col-lg-6 col-md-6 col-sm-6 col-12 mb-3">
+        <!-- Card de Mi Perfil -->
+        <div class="col-lg-6 col-md-6 col-sm-12">
             <div class="card shadow text-center h-100">
-                <h4 class="card-header">
-                    Ajustes
+                <h4 class="card-header bg-success text-white">
+                    <i class="bi bi-person-circle me-2"></i>
+                    Mi Perfil
                 </h4>
-                <div class="card-body ">
-                    <h5 class="card-title">Cambiar contraseña</h5>
-                    <a class="btn btn-success me-2 mb-1" routerLink="/auth/settings">Ir a los ajustes de la cuenta</a>
+                <div class="card-body d-flex flex-column">
+                    <h5 class="card-title mb-3">Gestiona tu Información Personal</h5>
+                    <div class="mt-auto">
+                        <div class="d-grid gap-2">
+                            <a class="btn btn-success" routerLink="/auth/user/information">
+                                <i class="bi bi-pencil-square me-2"></i>Actualizar datos generales
+                            </a>
+                            <a class="btn btn-success" routerLink="/auth/settings">
+                                <i class="bi bi-gear me-2"></i>Cambiar contraseña
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

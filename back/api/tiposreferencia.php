@@ -1,26 +1,23 @@
 <?php
-
+require_once '../config/cors.php';
 require_once '../src/controllers/TipoReferenciaController.php';
 
-// Crear una instancia del controlador
 $controlador = new TipoReferenciaController();
 
-// Verificar el método de solicitud HTTP
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $datos = json_decode(file_get_contents("php://input"), true);
     $idNuevo = $controlador->crear($datos);
-    echo json_encode(['id' => $idNuevo]); // Devuelve el ID
+    echo json_encode(['id' => $idNuevo]);
 } elseif ($_SERVER['REQUEST_METHOD'] === 'PUT') {
     $datos = json_decode(file_get_contents("php://input"), true);
-    $idExistente = $datos['id']; // Obtener el ID
+    $idExistente = $datos['id'];
     $actualizacionExitosa = $controlador->actualizar($idExistente, $datos);
-    echo json_encode(['success' => $actualizacionExitosa]); // Devuelve true si la actualización fue exitosa
+    echo json_encode(['success' => $actualizacionExitosa]);
 } elseif ($_SERVER['REQUEST_METHOD'] === 'GET') {
     if (isset($_GET['id'])) {
         $id = $_GET['id'];
         $resp = $controlador->obtenerPorId($id);
         if ($resp) {
-            // Establecer el encabezado de respuesta JSON
             header('Content-Type: application/json');
             echo json_encode($resp);
         } else {

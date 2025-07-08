@@ -12,10 +12,14 @@ export class UsersMediaService {
     constructor(private http: HttpClient) { }
 
     getMediaByUser(userId: number): Observable<any> {
-        return this.http.get<any>(`${this.apiUrl}/usuarioscomunicacion.php?idUsuario=${userId}`);
+        return this.http.get<any>(`${this.apiUrl}/usuarioscomunicacion.php?idUsuario=${userId}`, { withCredentials: true });
     }
 
     updateMediaForUser(data: { idUsuario: number; idsMedios: number[] }): Observable<any> {
-        return this.http.post<any>(`${this.apiUrl}/usuarioscomunicacion.php`, data);
+        return this.http.post<any>(
+            `${this.apiUrl}/usuarioscomunicacion.php`,
+            data,
+            { withCredentials: true }
+        );
     }           
 }

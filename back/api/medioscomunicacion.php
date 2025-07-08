@@ -1,5 +1,5 @@
 <?php
-
+require_once '../config/cors.php';
 require_once '../src/controllers/MedioComunicacionController.php';
 
 $controlador = new MedioComunicacionController();

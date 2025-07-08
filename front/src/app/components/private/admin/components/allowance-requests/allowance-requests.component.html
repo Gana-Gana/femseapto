@@ -1,0 +1,254 @@
+<div class="container mt-5">
+  <h1>Solicitudes de Auxilio</h1>
+
+  <app-allowance-report *ngIf="userRole !== 4 && userRole !== 5 && userRole !== 1"/>
+
+  <div class="card">
+    <p-toolbar styleClass="mb-1 gap-2">
+      <ng-template pTemplate="left">
+        <div class="input-container flex md:flex-row gap-3">
+          <p-inputGroup>
+            <input type="text" pInputText placeholder="Palabra clave" [formControl]="searchControl" />
+            <button type="button" class="button" pButton label="Buscar" (click)="onSearch()"></button>
+          </p-inputGroup>
+          <p-inputGroup>
+            <input type="text" pInputText placeholder="01/01/2024" [formControl]="dateControl" />
+            <button type="button" class="button" pButton label="Buscar" (click)="onSearch()"></button>
+          </p-inputGroup>
+        </div>
+      </ng-template>
+      <ng-template pTemplate="right">
+        <div class="input-container flex md:flex-row gap-3">
+          <button
+            pButton
+            type="button"
+            icon="pi pi-times"
+            class="p-button-rounded p-button-outlined"
+            (click)="onClear()"
+            label="Limpiar"
+          ></button>
+        </div>
+      </ng-template>
+    </p-toolbar>
+    <p-table #dt2
+      [value]="allowanceRequests"
+      dataKey="id"
+      styleClass="p-datatable-striped"
+      [paginator]="true"
+      [rows]="rows"
+      [totalRecords]="totalRecords"
+      [loading]="loading"
+      [lazy]="true"
+      (onLazyLoad)="loadAllowanceRequests(($event.first ?? 0) / ($event.rows ?? 10) + 1, $event.rows ?? 10, searchQuery, dateQuery)"
+      [rowsPerPageOptions]="[10, 25, 50]"
+      [globalFilterFields]="['id', 'adjuntos_auxilio', 'nombreAsociado', 'descripcion', 'fechaSolicitud', 'estado', 'observaciones']"
+      [tableStyle]="{ 'min-width': '75rem' }"
+    >
+      <ng-template pTemplate="header">
+        <tr>
+          <th style="width: 5%">No.</th>
+          <th style="width: 15%">No. Documento</th>
+          <th style="width: 20%">Nombre Completo</th>
+          <th style="width: 20%">Tipo de Auxilio</th>
+          <th style="width: 25%">Descripción</th>
+          <th style="width: 15%">Fecha de Solicitud</th>
+          <th style="width: 15%">Estado</th>
+          <th style="width: 15%">Observaciones</th>
+          <th style="width: 15%">Adjuntos</th>
+          <th *ngIf="userRole !== 4 && (userRole === 5 || userRole === 1)" style="width: 15%">Acciones</th>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="body" let-allowanceRequest let-i="rowIndex">
+        <tr>
+          <td>{{ i + 1 }}</td>
+          <td>{{ allowanceRequest.numeroDocumento }}</td>
+          <td>{{ allowanceRequest.nombreAsociado }}</td>
+          <td>{{ allowanceRequest.nombreTipoAuxilio }}</td>
+          <td>{{ allowanceRequest.descripcion }}</td>
+          <td>{{ allowanceRequest.fechaSolicitud | date: 'dd/MM/yyyy' }}</td>
+          <td>
+            {{
+              allowanceRequest.estado === null
+                ? 'Pendiente'
+                : allowanceRequest.estado === 1
+                ? 'Aprobado'
+                : 'Rechazado'
+            }}
+          </td>
+          <td>
+            <span>{{ allowanceRequest.observaciones || 'Sin observaciones' }}</span>
+          </td>
+          <td class="flex gap-2">
+            <button
+              pButton
+              icon="pi pi-paperclip"
+              class="p-button-rounded p-button-text p-button-sm"
+              title="Ver Adjuntos"
+              (click)="OpenModalAttachments(allowanceRequest.adjuntos_auxilio)"
+            ></button>
+          </td>
+          <td>
+            <button
+              *ngIf="userRole === 5"
+              pButton
+              icon="pi pi-pencil"
+              class="p-button-rounded p-button-text p-button-sm"
+              title="Gestionar"
+              (click)="openEditModal(allowanceRequest)"
+            ></button>
+            <app-generate-allowance-request 
+              [userId]="allowanceRequest.idUsuario"
+              [idSolicitudAuxilio]="allowanceRequest.id">
+            </app-generate-allowance-request>
+          </td>
+        </tr>
+      </ng-template>
+      <ng-template pTemplate="emptymessage">
+        <tr>
+          <td colspan="10" class="text-center text-gray-500">
+            No hay solicitudes de auxilio.
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+    <p-dialog
+      header="Gestionar Solicitud"
+      [(visible)]="showEditModal"
+      [modal]="true"
+      [style]="{ width: '30vw', 'min-width': '320px' }"
+      [closable]="false"
+    >
+      <div *ngIf="!successfullyManaged && !isSaving">
+        <div class="field mb-3 p-fluid">
+          <label for="estado" class="font-semibold">Estado</label>
+          <p-dropdown
+            inputId="estado"
+            [options]="[
+              { label: 'Aprobado', value: 1 },
+              { label: 'Rechazado', value: 0 }
+            ]"
+            [(ngModel)]="selectedStatus"
+            placeholder="Seleccione un estado"
+            class="w-full"
+          ></p-dropdown>
+        </div>
+        <div class="field mb-3 p-fluid">
+          <label for="observaciones" class="font-semibold">Observación</label>
+          <textarea
+            id="observaciones"
+            rows="4"
+            pInputTextarea
+            [(ngModel)]="commentText"
+            class="w-full p-inputtext"
+            placeholder="Escriba una observación..."
+          ></textarea>
+        </div>
+        <div class="d-flex align-items-center justify-content-between">
+          <button
+            pButton
+            label="Guardar"
+            icon="pi pi-check"
+            class="p-button-success p-button-sm p-button-rounded justify-center"
+            
+            [disabled]="isSaveDisabled()"
+            (click)="saveStatusChanges()"
+          ></button>
+          <button
+            pButton
+            label="Cancelar"
+            icon="pi pi-times"
+            class="p-button-danger p-button-sm p-button-rounded justify-center"
+            
+            (click)="closeModal()"
+          ></button>
+        </div>
+      </div>
+
+      <div *ngIf="isSaving" class="text-center py-5">
+    <p-progressSpinner styleClass="custom-spinner" strokeWidth="5"></p-progressSpinner>
+    <p class="mt-3 text-gray-700">Guardando cambios...</p>
+  </div>
+
+      <div *ngIf="successfullyManaged && !isSaving" class="text-center py-4">
+        <i class="pi pi-check-circle text-green-500" style="font-size: 2rem;"></i>
+        <p class="text-green-700 text-lg font-medium mt-2">
+          Solicitud gestionada con éxito.
+        </p>
+        <button
+          pButton
+          label="Cerrar"
+          icon="pi pi-check"
+          class="p-button-success mt-3"
+          (click)="closeModal()"
+        ></button>
+      </div>
+    </p-dialog>
+    <p-dialog
+      header="Archivos Adjuntos"
+      [(visible)]="mostrarModal"
+      [modal]="true"
+      [style]="{ width: '40vw', 'min-width': '300px' }"
+      [draggable]="false"
+      [resizable]="false"
+    >
+      <div class="attachments-container">
+        <div *ngIf="adjuntosSeleccionados.length === 0" class="text-center py-4">
+          <i class="pi pi-inbox" style="font-size: 3rem; color: #6c757d;"></i>
+          <p class="text-muted mt-2">No hay archivos adjuntos</p>
+        </div>
+
+        <div *ngIf="adjuntosSeleccionados.length > 0" class="files-grid">
+          <div
+            *ngFor="let archivo of adjuntosSeleccionados; let i = index"
+            class="file-item p-3 mb-3 border rounded-3 bg-light position-relative"
+            style="border: 2px solid #e9ecef; transition: all 0.3s ease;"
+            onmouseover="this.style.borderColor='#0d6efd'; this.style.boxShadow='0 4px 12px rgba(13, 110, 253, 0.15)'"
+            onmouseout="this.style.borderColor='#e9ecef'; this.style.boxShadow='none'"
+          >
+            <div class="d-flex align-items-center justify-content-between">
+              <div class="file-info d-flex align-items-center flex-grow-1">
+                <div class="file-icon me-3">
+                  <i class="bi bi-file-earmark-pdf-fill text-danger" style="font-size: 2rem;"></i>
+                </div>
+                <div class="file-details">
+                  <h6 class="mb-1 fw-semibold text-dark">{{ archivo.split('/').pop() }}</h6>
+                </div>
+              </div>
+
+              <div class="file-actions">
+                <button
+                  pButton
+                  icon="pi pi-eye"
+                  class="p-button-text p-button-sm"
+                  (click)="seeAttachment(archivo)"
+                ></button>
+              </div>
+            </div>
+
+            <div class="file-preview mt-2">
+              <div class="progress" style="height: 4px;">
+                <div class="progress-bar bg-success" role="progressbar" style="width: 100%" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <ng-template pTemplate="footer">
+        <div class="d-flex justify-content-between align-items-center">
+          <small class="text-muted">
+            <i class="bi bi-info-circle me-1"></i>
+            {{ adjuntosSeleccionados.length }} archivo(s) adjunto(s)
+          </small>
+          <button
+            pButton
+            label="Cerrar"
+            icon="pi pi-times"
+            class="p-button-secondary p-button-sm"
+            (click)="mostrarModal = false"
+          ></button>
+        </div>
+      </ng-template>
+    </p-dialog>
+  </div>
+</div>

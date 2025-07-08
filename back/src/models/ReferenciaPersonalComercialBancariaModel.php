@@ -86,8 +86,8 @@ class ReferenciaPersonalComercialBancaria {
                 direccion,
                 telefono,
                 correo_electronico,
-                CONVERT_TZ(creado_el, '+00:00', '-05:00') AS creado_el,
-                CONVERT_TZ(actualizado_el, '+00:00', '-05:00') AS actualizado_el
+                creado_el,
+                actualizado_el
             FROM referencias_personales_comerciales_bancarias
             WHERE id = ?");
         $query->bind_param("i", $id);
@@ -116,8 +116,8 @@ class ReferenciaPersonalComercialBancaria {
                 direccion,
                 telefono,
                 correo_electronico,
-                CONVERT_TZ(creado_el, '+00:00', '-05:00') AS creado_el,
-                CONVERT_TZ(actualizado_el, '+00:00', '-05:00') AS actualizado_el
+                creado_el,
+                actualizado_el
             FROM referencias_personales_comerciales_bancarias
             WHERE id_usuario = ?");
         $query->bind_param("i", $idUsuario);
@@ -150,8 +150,8 @@ class ReferenciaPersonalComercialBancaria {
                     direccion,
                     telefono,
                     correo_electronico,
-                    CONVERT_TZ(creado_el, '+00:00', '-05:00') AS creado_el,
-                    CONVERT_TZ(actualizado_el, '+00:00', '-05:00') AS actualizado_el
+                    creado_el,
+                    actualizado_el
                 FROM referencias_personales_comerciales_bancarias";
         $result = $db->query($query);
         $referencias = [];

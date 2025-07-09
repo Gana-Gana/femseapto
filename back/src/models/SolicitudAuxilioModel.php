@@ -9,18 +9,20 @@ class SolicitudAuxilio{
     public $fechaSolicitud;
     public $estado;
     public $observaciones;
+    public $fechaActualizacion;
     public $adjuntosAuxilio = [];
 
 
-    public function __construct($id = null, $idUsuario = null, $idTipoAuxilio = null, $descripcion = null, $fechaSolicitud = null, $adjuntosAuxilio = []) {
+    public function __construct($id = null, $idUsuario = null, $idTipoAuxilio = null, $descripcion = null, $fechaSolicitud = null, $estado = null, $observaciones = null, $fechaActualizacion = null, $adjuntosAuxilio = []) {
         
         $this->id = $id;
         $this->idUsuario = $idUsuario;
         $this->idTipoAuxilio = $idTipoAuxilio;
         $this->descripcion = $descripcion;
         $this->fechaSolicitud = $fechaSolicitud;
-        null;
-        null;
+        $this->estado = $estado;
+        $this->observaciones = $observaciones;
+        $this->fechaActualizacion = $fechaActualizacion;
         $this->adjuntosAuxilio = $adjuntosAuxilio;
     }
 
@@ -64,19 +66,12 @@ public function actualizarEstadoYObservaciones() {
 public static function obtenerPorId($id) {
     $db = getDB();
     $query = $db->prepare(
-        "SELECT+
-            id,
-            id_usuario,
-            id_tipo_auxilio,
-            descripcion,
-            fecha_solicitud,
-                estado,
-                observaciones
+        "SELECT *
         FROM solicitudes_auxilios
         WHERE id = ?");
     $query->bind_param("i", $id);
     $query->execute();
-    $query->bind_result($id, $idUsuario, $idTipoAuxilio, $descripcion, $fechaSolicitud, $estado, $observaciones);
+    $query->bind_result($id, $idUsuario, $idTipoAuxilio, $descripcion, $fechaSolicitud, $estado, $observaciones, $fechaActualizacion);
     $solicitud = null;
     if ($query->fetch()) {
         $query->close();
@@ -92,7 +87,7 @@ public static function obtenerPorId($id) {
         }
         $adjuntosQuery->close();
 
-        $solicitud = new SolicitudAuxilio($id, $idUsuario, $idTipoAuxilio, $descripcion, $fechaSolicitud, $estado, $observaciones, $adjuntos);
+        $solicitud = new SolicitudAuxilio($id, $idUsuario, $idTipoAuxilio, $descripcion, $fechaSolicitud, $estado, $observaciones, $fechaActualizacion, $adjuntos);
     } else {
         $query->close();
     }
@@ -105,20 +100,13 @@ public static function obtenerPorId($id) {
     public static function obtenerPorIdUsuario($idUsuario) {
     $db = getDB();
     $query = $db->prepare(
-        "SELECT
-            id,
-            id_usuario,
-            id_tipo_auxilio,
-            descripcion,
-            fecha_solicitud,
-                estado,
-                observaciones
+        "SELECT *
         FROM solicitudes_auxilios
         WHERE id_usuario = ?"
     );
     $query->bind_param("i", $idUsuario);
     $query->execute();
-    $query->bind_result($id, $idUsuario, $idTipoAuxilio, $descripcion, $fechaSolicitud, $estado, $observaciones);
+    $query->bind_result($id, $idUsuario, $idTipoAuxilio, $descripcion, $fechaSolicitud, $estado, $observaciones, $fechaActualizacion);
     
     $solAux = [];
 
@@ -136,7 +124,7 @@ public static function obtenerPorId($id) {
         $adjuntosQuery->close();
 
         
-        $solAux[] = new SolicitudAuxilio($id, $idUsuario, $idTipoAuxilio, $descripcion, $fechaSolicitud, $estado, $observaciones, $adjuntos);
+        $solAux[] = new SolicitudAuxilio($id, $idUsuario, $idTipoAuxilio, $descripcion, $fechaSolicitud, $estado, $observaciones, $fechaActualizacion, $adjuntos);
     }
 
     $query->close();
@@ -148,14 +136,7 @@ public static function obtenerPorId($id) {
 
     public static function obtenerTodos() {
         $db = getDB();
-        $query = "SELECT
-                    id,
-                    id_usuario,
-                    id_tipo_auxilio,
-                    descripcion,
-                    fecha_solicitud,
-                    estado,
-                    observaciones
+        $query = "SELECT *
                 FROM solicitudes_auxilios";
         $result = $db->query($query);
         $solicitudes = [];
@@ -177,7 +158,9 @@ public static function obtenerPorId($id) {
                 $row['descripcion'], 
                 $row['fecha_solicitud'], 
                 $row['estado'], 
-                $row['observaciones']
+                $row['observaciones'],
+                $row['fecha_actualizacion'],
+                $adjuntos
             );
         }
         $db->close();
@@ -337,14 +320,7 @@ public static function obtenerPorId($id) {
         $endDateTime = $endDate . ' 23:59:59';
         
         $query = $db->prepare(
-            "SELECT
-                id,
-                id_usuario,
-                id_tipo_auxilio,
-                descripcion,
-                fecha_solicitud,
-                estado,
-                observaciones
+            "SELECT *
             FROM solicitudes_auxilios
             WHERE fecha_solicitud
             BETWEEN ?
@@ -362,7 +338,9 @@ public static function obtenerPorId($id) {
                 $row['descripcion'],
                 $row['fecha_solicitud'],
                 $row['estado'],
-                $row['observaciones']
+                $row['observaciones'],
+                $row['fecha_actualizacion'],
+                []
             );
         }
         error_log("Número de solicitudes encontradas: " . count($solicitudes));

@@ -15,7 +15,8 @@ class SolicitudAuxilioController {
             $datos['idUsuario'],
             $datos['idTipoAuxilio'],
             $datos['descripcion'],
-            date('Y-m-d'),
+            null,
+            null,
             null,
             null,
             $datos['adjuntosAuxilio'] ?? []

@@ -31,12 +31,12 @@ export class RequestAllowanceComponent implements OnInit {
   isSubmitting: boolean = false;
 
   documentRequirements: { [key: number]: string[] } = {
-    1: ['Solicitud diligenciada', 'Registro Civil de Nacimiento (Copia autética)'],
+    1: ['Solicitud diligenciada', 'Registro Civil de Nacimiento (Copia auténtica)'],
     2: ['Fórmula médica', 'Factura con requisitos legales'],
-    3: ['Solicitud escrita', 'soportes según tipo de calamidad'],
+    3: ['Solicitud escrita', 'Soportes según tipo de calamidad'],
     4: ['Documento médico del tratamiento', 'Facturas legales', 'Solicitud formal', 'Comprobante de pago'],
     5: ['Promesa de compraventa', 'Recibo de pago notarial (Máx. 30 días)'],
-    6: ['Constancia de estudio o recibo de pago con sello', 'Presentación certificado de notas del periodo cursado'],
+    6: ['Constancia de estudio o recibo de pago con sello', 'Presentación certificado de notas del periodo cursado']
   };
 
   additionalFiles: { label: string; file?: File | null }[] = [];

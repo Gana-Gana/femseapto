@@ -37,22 +37,31 @@ class TipoAuxilio {
         return $tiposAux;
     }
 
-    public static function obtenerDisponibles(){
-        $db = getDB();
-        $query = $db->prepare("SELECT id, nombre FROM tipos_auxilios 
-    WHERE (fecha_inicio IS NULL OR CURDATE() >= fecha_inicio)
-      AND (fecha_fin IS NULL OR CURDATE() <= fecha_fin)");
+public static function obtenerDisponibles(){
+    $db = getDB();
 
-        $query->execute();
-        $result = $query->get_result();
+    $query = $db->prepare("
+        SELECT id, nombre 
+        FROM tipos_auxilios
+        WHERE
+            (fecha_inicio IS NULL AND fecha_fin IS NULL)
+            OR
+            (fecha_inicio IS NOT NULL AND fecha_fin IS NOT NULL
+             AND NOW() BETWEEN fecha_inicio AND fecha_fin)
+    ");
 
-        $tiposDisponibles = [];
-        while ($row = $result->fetch_assoc()) {
-            $tiposDisponibles[] = $row;
-        }
-        $db->close();
-        return $tiposDisponibles;
+    $query->execute();
+    $result = $query->get_result();
+
+    $tiposDisponibles = [];
+    while ($row = $result->fetch_assoc()) {
+        $tiposDisponibles[] = $row;
     }
+    $db->close();
+    return $tiposDisponibles;
+}
+
+
 
 }
 ?>
